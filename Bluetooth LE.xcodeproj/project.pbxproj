@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		47309C30155AD5C60065F74E /* readme.md in Resources */ = {isa = PBXBuildFile; fileRef = 47309C2F155AD5C60065F74E /* readme.md */; };
 		473C9F60154F42A700842854 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 473C9F5F154F42A700842854 /* UIKit.framework */; };
 		473C9F62154F42A700842854 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 473C9F61154F42A700842854 /* Foundation.framework */; };
 		473C9F64154F42A700842854 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 473C9F63154F42A700842854 /* CoreGraphics.framework */; };
@@ -26,6 +27,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		47309C2F155AD5C60065F74E /* readme.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = readme.md; sourceTree = "<group>"; };
 		473C9F5B154F42A700842854 /* Bluetooth LE.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Bluetooth LE.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		473C9F5F154F42A700842854 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
 		473C9F61154F42A700842854 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
@@ -68,6 +70,7 @@
 		473C9F50154F42A700842854 = {
 			isa = PBXGroup;
 			children = (
+				47309C2F155AD5C60065F74E /* readme.md */,
 				473C9F7E154F459F00842854 /* Resources */,
 				473C9F65154F42A700842854 /* Bluetooth LE */,
 				473C9F5E154F42A700842854 /* Frameworks */,
@@ -200,6 +203,7 @@
 				473C9F89154F45B800842854 /* Icon-Small@2x.png in Resources */,
 				473C9F8A154F45B800842854 /* Icon.png in Resources */,
 				473C9F8B154F45B800842854 /* Icon@2x.png in Resources */,
+				47309C30155AD5C60065F74E /* readme.md in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -325,6 +329,7 @@
 				473C9F7B154F42A700842854 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
