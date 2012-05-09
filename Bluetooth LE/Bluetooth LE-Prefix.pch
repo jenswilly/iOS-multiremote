@@ -1,0 +1,28 @@
+//
+// Prefix header for all source files of the 'Bluetooth LE' target in the 'Bluetooth LE' project
+//
+
+#import <Availability.h>
+
+#ifndef __IPHONE_5_0
+#warning "This project uses features only available in iOS SDK 5.0 and later."
+#endif
+
+#ifdef __OBJC__
+	#import <UIKit/UIKit.h>
+	#import <Foundation/Foundation.h>
+#endif
+
+
+#import "AppDelegate.h"
+
+#if !defined( DEBUG_LOG ) && defined( DEBUG )
+#define DEBUG_LOG( msg, ... ) NSLog( msg,  ##__VA_ARGS__ )
+#define DEBUG_POSITION                NSLog( @"-> %@ - %@", NSStringFromClass( [self class] ), NSStringFromSelector(_cmd) )
+#elif !defined( DEBUG_LOG ) && !defined( DEBUG )
+#define DEBUG_LOG( msg, ... )
+#define DEBUG_POSITION
+#endif
+
+// macros
+#define APP ((AppDelegate*)[[UIApplication sharedApplication] delegate])
