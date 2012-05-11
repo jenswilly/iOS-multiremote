@@ -128,7 +128,7 @@
                                 <rect key="frame" x="0.0" y="460" width="320" height="250"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <subviews>
-                                    <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" editable="NO" text="Ready" id="mUI-pA-oKY">
+                                    <textView clipsSubviews="YES" multipleTouchEnabled="YES" alpha="0.69999999999999996" contentMode="scaleToFill" alwaysBounceVertical="YES" editable="NO" text="Ready" id="mUI-pA-oKY">
                                         <rect key="frame" x="0.0" y="0.0" width="320" height="250"/>
                                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                         <color key="backgroundColor" red="0.0" green="0.5" blue="1" alpha="1" colorSpace="calibratedRGB"/>
@@ -157,7 +157,7 @@
                                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
                                     </view>
                                 </subviews>
-                                <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
+                                <color key="backgroundColor" red="0.031372549020000001" green="0.094117647060000004" blue="0.42745098040000001" alpha="0.0" colorSpace="calibratedRGB"/>
                             </view>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
@@ -188,6 +188,30 @@
         <image name="btn_record.png" width="122" height="52"/>
         <image name="btn_scan.png" width="122" height="52"/>
     </resources>
+    <classes>
+        <class className="ViewController" superclassName="UIViewController">
+            <source key="sourceIdentifier" type="project" relativePath="./Classes/ViewController.h"/>
+            <relationships>
+                <relationship kind="action" name="clearAction:"/>
+                <relationship kind="action" name="disconnectAction:"/>
+                <relationship kind="action" name="forgetPreferredAction:"/>
+                <relationship kind="action" name="learn:" candidateClass="UIButton"/>
+                <relationship kind="action" name="readAction:"/>
+                <relationship kind="action" name="scanAction:"/>
+                <relationship kind="action" name="sendCommandAction:"/>
+                <relationship kind="action" name="sendLearnAction:"/>
+                <relationship kind="action" name="sendTAction:"/>
+                <relationship kind="action" name="sendYAction:"/>
+                <relationship kind="action" name="toggleDebugAction:" candidateClass="UIButton"/>
+                <relationship kind="outlet" name="debugButton" candidateClass="UIButton"/>
+                <relationship kind="outlet" name="debugView" candidateClass="UIView"/>
+                <relationship kind="outlet" name="learnButton" candidateClass="UIButton"/>
+                <relationship kind="outlet" name="scanButton" candidateClass="UIButton"/>
+                <relationship kind="outlet" name="textView" candidateClass="UITextView"/>
+                <relationship kind="outletCollection" name="mustBeConnectedButtons" candidateClass="UIButton"/>
+            </relationships>
+        </class>
+    </classes>
     <simulatedMetricsContainer key="defaultSimulatedMetrics">
         <simulatedStatusBarMetrics key="statusBar"/>
         <simulatedOrientationMetrics key="orientation"/>

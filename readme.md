@@ -4,11 +4,11 @@ This is the iOS app source code for the Bluetooth LE enabled multi-remote contro
 
 ## Comments
 
-### 2012-05-09
-The first version is working! Yay!
-
 ### 2012-05-11
 - Updated interface a bit.
 - The app now attempts to connect automatically when becoming active. Command buttons are first enabled when a device is connected.
 - The command buttons now send S-00[1-4].
 - Learning is done by first pressing the "Record" button and then the command button to be learned. This sends L-00[1-4] to the device. (Now I just need both the BLE and MCU to listen for and pass on the button number. And the MCU to be able to store more than one command. And both.)
+
+### 2012-05-09
+The first version is working! Yay!
