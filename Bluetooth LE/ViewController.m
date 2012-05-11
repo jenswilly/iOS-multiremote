@@ -8,6 +8,7 @@
 
 #import "ViewController.h"
 #import "CBUUID+Utils.h"
+#import "MBProgressHUD.h"
 
 #define UUID_GCAC_SERVICE @"b8b96269-562a-408f-8155-0b45f21c7774"
 #define UUID_DEVICE_INFORMATION @"180a"
@@ -17,12 +18,19 @@
 @interface ViewController ()
 - (void)print:(NSString*)text;
 - (void)scanTimeout:(NSTimer*)timer;
+- (void)toggleDebugMode;
+- (void)toggleLearningMode;
 
 @end
 
 @implementation ViewController
 @synthesize centralManager, peripherals, connectedPeripheral, GCACService, GCACCommandCharacteristic, GCACResponseCharacteristic, peripheralNames;
+@synthesize learnButton;
+@synthesize debugButton;
+@synthesize scanButton;
 @synthesize textView;
+@synthesize debugView;
+@synthesize mustBeConnectedButtons;
 
 - (void)viewDidLoad
 {
@@ -34,12 +42,20 @@
 	
 	// Initialize
 	peripherals = [[NSMutableArray alloc] init];
-	peripheralNames = [[NSMutableDictionary alloc] init];			
+	peripheralNames = [[NSMutableDictionary alloc] init];	
+	
+	// Disable all buttons requiring a connection
+	[mustBeConnectedButtons enumerateObjectsUsingBlock:^(UIButton *obj, NSUInteger idx, BOOL *stop) {obj.enabled = NO;}];
 }
 
 - (void)viewDidUnload
 {
 	[self setTextView:nil];
+    [self setDebugView:nil];
+	[self setLearnButton:nil];
+	[self setDebugButton:nil];
+	[self setMustBeConnectedButtons:nil];
+	[self setScanButton:nil];
     [super viewDidUnload];
     // Release any retained subviews of the main view.
 }
@@ -50,6 +66,40 @@
 }
 
 #pragma mark - Private methods
+
+- (void)toggleDebugMode
+{
+	// Is the debugging view already visible?
+	if( debugView.frame.origin.y < 460 )
+	{
+		// Yes: hide it
+		CGRect frame = debugView.frame;
+		frame.origin.y = 460;
+		
+		[UIView animateWithDuration:0.3 animations:^{
+			debugButton.highlighted = NO;
+			debugView.frame = frame;
+		}];
+	}
+	else
+	{
+		// No: show it
+		CGRect frame = debugView.frame;
+		frame.origin.y = 460 - frame.size.height;
+		
+		[UIView animateWithDuration:0.3 animations:^{
+			debugButton.highlighted = YES;
+			debugView.frame = frame;
+		}];
+	}
+}
+
+- (void)toggleLearningMode
+{
+	// Toggle recording
+	learning = !learning;
+	learnButton.highlighted = learning;
+}
 
 - (void)print:(NSString *)text
 {
@@ -62,6 +112,7 @@
 {
 	// Stop scanning
 	[centralManager stopScan];
+	[MBProgressHUD hideHUDForView:self.view animated:YES];
 	[self print:@"Done scanning."];
 	
 	// We're done scanning for devices. If we're not yet connecting, let the user pick a device if we found any
@@ -84,7 +135,15 @@
 		[actionSheet showInView:self.view];
 	}
 	else 
+	{
 		[self print:@"... no devices found."];
+		
+		UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"No devices found" message:@"Make sure the device is switched on and in range." delegate:nil cancelButtonTitle:nil otherButtonTitles:@"OK", nil];
+		[alert show];
+		
+		// Show scan button
+		scanButton.hidden = NO;
+	}
 }
 
 #pragma mark - UIActionSheetDelegate methods
@@ -97,6 +156,7 @@
 		return;
 	
 	// Otherwise, connect to specified device
+	[MBProgressHUD showHUDAddedTo:self.view animated:YES];
 	CBPeripheral *peripheral = [peripherals objectAtIndex:buttonIndex - 1];	// -1 for the Cancel button
 	[centralManager connectPeripheral:peripheral options:[NSDictionary dictionaryWithObject:[NSNumber numberWithBool:YES] forKey:CBConnectPeripheralOptionNotifyOnDisconnectionKey]];
 }
@@ -152,7 +212,13 @@
 
 - (void)centralManager:(CBCentralManager *)central didConnectPeripheral:(CBPeripheral *)peripheral
 {
+	// Hide HUD
+	[MBProgressHUD hideHUDForView:self.view animated:YES];
+	
 	[self print:[NSString stringWithFormat:@"Connected to peripheral: %@", [CBUUID stringFromCFUUIDRef:peripheral.UUID]]];
+	
+	// Hide scan button
+	scanButton.hidden = YES;
 	
 	// Set property and remember as preferred device
 	peripheral.delegate = self;
@@ -175,6 +241,9 @@
 
 	[self print:@"Peripheral disconnected"];
 	self.connectedPeripheral = nil;
+	
+	// Disable all buttons requiring a connection
+	[mustBeConnectedButtons enumerateObjectsUsingBlock:^(UIButton *obj, NSUInteger idx, BOOL *stop) {obj.enabled = NO;}];
 }
 
 - (void)centralManager:(CBCentralManager *)central didFailToConnectPeripheral:(CBPeripheral *)peripheral error:(NSError *)error
@@ -230,6 +299,9 @@
 			{
 				[self print:@"Found command characteristic"];
 				self.GCACCommandCharacteristic = characteristic;
+				
+				// We have the command characteristic: enable buttons
+				[mustBeConnectedButtons enumerateObjectsUsingBlock:^(UIButton *obj, NSUInteger idx, BOOL *stop) {obj.enabled = YES;}];
 			}
 			else if( [characteristic.UUID isEqualToUUIDString:UUID_RESPONSE_CHARACTERISTIC] )
 			{
@@ -296,6 +368,9 @@
 
 - (IBAction)scanAction:(id)sender
 {
+	// Show HUD
+	[MBProgressHUD showHUDAddedTo:self.view animated:YES];
+	
 	// Forget existing
 	[peripherals removeAllObjects];
 	[peripheralNames removeAllObjects];
@@ -306,7 +381,7 @@
 	[centralManager scanForPeripheralsWithServices:[NSArray arrayWithObject:[CBUUID UUIDWithString:UUID_GCAC_SERVICE]] options:0];
 }
 
-- (IBAction)sendCommandAction:(id)sender
+- (IBAction)sendCommandAction:(UIButton*)sender
 {
 	if( self.connectedPeripheral == nil )
 	{
@@ -314,8 +389,18 @@
 		return;
 	}
 	
-	[self print:@"Sending \"S-000\""];
-	[connectedPeripheral writeValue:[@"S-000" dataUsingEncoding:NSUTF8StringEncoding] forCharacteristic:GCACCommandCharacteristic type:CBCharacteristicWriteWithResponse];
+	// Build command string
+	NSString *commandPrefix = (learning ? @"L" : @"S");
+	NSString *commandString = [NSString stringWithFormat:@"%@-%03d", commandPrefix, sender.tag];
+	[self print:[NSString stringWithFormat:@"Sending \"%@", commandString]];
+	[connectedPeripheral writeValue:[commandString dataUsingEncoding:NSUTF8StringEncoding] forCharacteristic:GCACCommandCharacteristic type:CBCharacteristicWriteWithResponse];
+
+	// Not learning anymore
+	if( learning )
+	{
+		learning = NO;
+		learnButton.highlighted = NO;
+	}
 }
 
 - (IBAction)disconnectAction:(id)sender
@@ -351,6 +436,18 @@
 	
 	[self print:@"Reading response characteristic..."];
 	[connectedPeripheral readValueForCharacteristic:GCACResponseCharacteristic];
+}
+
+- (IBAction)learn:(UIButton*)sender
+{
+	// Schedule this on the main thread so we can change the button's state
+	[self performSelectorOnMainThread:@selector(toggleLearningMode) withObject:nil waitUntilDone:NO];
+}
+
+- (IBAction)toggleDebugAction:(UIButton *)sender
+{
+	// Schedule this on the main thread so we can change the button's state
+	[self performSelectorOnMainThread:@selector(toggleDebugMode) withObject:nil waitUntilDone:NO];
 }
 
 - (IBAction)sendLearnAction:(id)sender

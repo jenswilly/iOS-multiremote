@@ -8,6 +8,7 @@
 
 #import "AppDelegate.h"
 #import "CBUUID+Utils.h"
+#import "ViewController.h"
 
 static NSString* const kUserDefaults_PreferredDeviceKey = @"kUserDefaults_PreferredDeviceKey";
 
@@ -42,6 +43,13 @@ static NSString* const kUserDefaults_PreferredDeviceKey = @"kUserDefaults_Prefer
 {
 	// Restart any tasks that were paused (or not yet started) while the application was inactive. If the application was previously in the background, optionally refresh the user interface.
 	[self loadPreferredDevice];
+	
+	// Connect if not already connected
+	ViewController *viewController = (ViewController*)_window.rootViewController;
+	if( !viewController.connectedPeripheral )
+	{
+		[viewController scanAction:nil];
+	}
 }
 
 - (void)applicationWillTerminate:(UIApplication *)application
