@@ -16,5 +16,6 @@
 
 - (void)savePreferredDevice;
 - (void)loadPreferredDevice;
+- (void)setAppearance;
 
 @end

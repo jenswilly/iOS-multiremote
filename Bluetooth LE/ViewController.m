@@ -20,6 +20,7 @@
 - (void)scanTimeout:(NSTimer*)timer;
 - (void)toggleDebugMode;
 - (void)toggleLearningMode;
+- (void)populateTitleLabelScroller;
 
 @end
 
@@ -28,9 +29,12 @@
 @synthesize learnButton;
 @synthesize debugButton;
 @synthesize scanButton;
+@synthesize flexSpace;
+@synthesize toolbar;
+@synthesize pageLabelScroller;
 @synthesize textView;
 @synthesize debugView;
-@synthesize mustBeConnectedButtons;
+@synthesize mainScroller;
 
 - (void)viewDidLoad
 {
@@ -44,8 +48,23 @@
 	peripherals = [[NSMutableArray alloc] init];
 	peripheralNames = [[NSMutableDictionary alloc] init];	
 	
+	// Set toolbar items
+	[toolbar setItems:[NSArray arrayWithObjects:debugButton, flexSpace, nil] animated:YES];
+	 
+	// Appearance
+	[debugButton setBackgroundImage:[UIImage imageNamed:@"topbtn_debug.png"] forState:UIControlStateNormal barMetrics:UIBarMetricsDefault];
+	[scanButton setBackgroundImage:[UIImage imageNamed:@"topbtn_scan.png"] forState:UIControlStateNormal barMetrics:UIBarMetricsDefault];
+	[learnButton setBackgroundImage:[UIImage imageNamed:@"topbtn_learn.png"] forState:UIControlStateNormal barMetrics:UIBarMetricsDefault];
+	
+	// Configure scrollers
+	mainScroller.contentSize = CGSizeMake( mainScroller.bounds.size.width * 2, mainScroller.bounds.size.height );
+	[self populateTitleLabelScroller];
+	
 	// Disable all buttons requiring a connection
-	[mustBeConnectedButtons enumerateObjectsUsingBlock:^(UIButton *obj, NSUInteger idx, BOOL *stop) {obj.enabled = NO;}];
+	[mainScroller.subviews enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+		if( [obj isKindOfClass:[UIButton class]] )
+			[(UIButton*)obj setEnabled:NO];
+	}];
 }
 
 - (void)viewDidUnload
@@ -54,10 +73,12 @@
     [self setDebugView:nil];
 	[self setLearnButton:nil];
 	[self setDebugButton:nil];
-	[self setMustBeConnectedButtons:nil];
 	[self setScanButton:nil];
+	[self setMainScroller:nil];
+	[self setFlexSpace:nil];
+	[self setToolbar:nil];
+	[self setPageLabelScroller:nil];
     [super viewDidUnload];
-    // Release any retained subviews of the main view.
 }
 
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation
@@ -65,7 +86,50 @@
 	return UIInterfaceOrientationIsPortrait( interfaceOrientation );
 }
 
+#pragma mark - UIScrollViewDelegate methods
+
+- (void)scrollViewDidScroll:(UIScrollView *)scrollView
+{
+	// Calculate position for title scroller: one page in the main scroller corresponds to 80px in the title scroller
+	CGFloat titleScrollerOffset = -160 + mainScroller.contentOffset.x / 320 * 80;
+	pageLabelScroller.contentOffset = CGPointMake( titleScrollerOffset, 0 );
+}
+
 #pragma mark - Private methods
+
+- (void)populateTitleLabelScroller
+{
+	/// TEMP:
+	NSArray *pageTitles = [NSArray arrayWithObjects:@"TV", @"DVD", @"Other stuff", nil];
+	CGFloat xPos = 0;
+	CGFloat maxX = 0;
+	
+	for( NSString *pageTitle in pageTitles )
+	{
+		// Create label
+		UILabel *label = [[UILabel alloc] initWithFrame:CGRectZero];
+		label.backgroundColor = [UIColor clearColor];
+		label.textColor = [UIColor whiteColor];
+		label.shadowColor = [UIColor blackColor];
+		label.shadowOffset = CGSizeMake( 0, 1 );
+		label.text = pageTitle;
+		[label sizeToFit];
+		
+		// Position
+		CGRect frame = label.frame;
+		frame.origin.x = xPos - frame.size.width/2;
+		frame.origin.y = pageLabelScroller.bounds.size.height/2 - frame.size.height/2;
+		label.frame = frame;
+		xPos += 80;
+		maxX = CGRectGetMaxX( label.frame );
+		
+		[pageLabelScroller addSubview:label];
+	}
+	
+	// Initial position
+	pageLabelScroller.contentSize = CGSizeMake( maxX, pageLabelScroller.bounds.size.height );
+	pageLabelScroller.contentOffset = CGPointMake( -160, 0 );
+}
 
 - (void)toggleDebugMode
 {
@@ -77,7 +141,7 @@
 		frame.origin.y = 460;
 		
 		[UIView animateWithDuration:0.3 animations:^{
-			debugButton.highlighted = NO;
+//			debugButton.highlighted = NO;
 			debugView.frame = frame;
 		}];
 	}
@@ -88,7 +152,7 @@
 		frame.origin.y = 460 - frame.size.height;
 		
 		[UIView animateWithDuration:0.3 animations:^{
-			debugButton.highlighted = YES;
+//			debugButton.highlighted = YES;
 			debugView.frame = frame;
 		}];
 	}
@@ -98,7 +162,7 @@
 {
 	// Toggle recording
 	learning = !learning;
-	learnButton.highlighted = learning;
+//	learnButton.highlighted = learning;
 }
 
 - (void)print:(NSString *)text
@@ -141,8 +205,9 @@
 		UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"No devices found" message:@"Make sure the device is switched on and in range." delegate:nil cancelButtonTitle:nil otherButtonTitles:@"OK", nil];
 		[alert show];
 		
-		// Show scan button
-		scanButton.hidden = NO;
+		// Set toolbar items
+		[toolbar setItems:[NSArray arrayWithObjects:debugButton, flexSpace, scanButton, nil] animated:YES];
+		
 	}
 }
 
@@ -218,7 +283,7 @@
 	[self print:[NSString stringWithFormat:@"Connected to peripheral: %@", [CBUUID stringFromCFUUIDRef:peripheral.UUID]]];
 	
 	// Hide scan button
-	scanButton.hidden = YES;
+//	scanButton.hidden = YES;
 	
 	// Set property and remember as preferred device
 	peripheral.delegate = self;
@@ -242,9 +307,12 @@
 	[self print:@"Peripheral disconnected"];
 	self.connectedPeripheral = nil;
 	
-	// Disable all buttons requiring a connection and show the scan button
-	[mustBeConnectedButtons enumerateObjectsUsingBlock:^(UIButton *obj, NSUInteger idx, BOOL *stop) {obj.enabled = NO;}];
-	scanButton.hidden = NO;
+	// Disable all buttons requiring a connection
+	[mainScroller.subviews enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+		if( [obj isKindOfClass:[UIButton class]] )
+			[(UIButton*)obj setEnabled:NO];
+	}];
+	[toolbar setItems:[NSArray arrayWithObjects:debugButton, flexSpace, scanButton, nil] animated:YES];
 }
 
 - (void)centralManager:(CBCentralManager *)central didFailToConnectPeripheral:(CBPeripheral *)peripheral error:(NSError *)error
@@ -302,7 +370,13 @@
 				self.GCACCommandCharacteristic = characteristic;
 				
 				// We have the command characteristic: enable buttons
-				[mustBeConnectedButtons enumerateObjectsUsingBlock:^(UIButton *obj, NSUInteger idx, BOOL *stop) {obj.enabled = YES;}];
+				[mainScroller.subviews enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+					if( [obj isKindOfClass:[UIButton class]] )
+						[(UIButton*)obj setEnabled:YES];
+				}];
+				
+				// Set toolbar items
+				[toolbar setItems:[NSArray arrayWithObjects:debugButton, flexSpace, learnButton, nil] animated:YES];
 			}
 			else if( [characteristic.UUID isEqualToUUIDString:UUID_RESPONSE_CHARACTERISTIC] )
 			{
@@ -380,6 +454,9 @@
 	[self print:@"Start scanning..."];
 	scanTimer = [NSTimer scheduledTimerWithTimeInterval:2.0f target:self selector:@selector(scanTimeout:) userInfo:nil repeats:NO];
 	[centralManager scanForPeripheralsWithServices:[NSArray arrayWithObject:[CBUUID UUIDWithString:UUID_GCAC_SERVICE]] options:0];
+	
+	// Set toolbar items
+	[toolbar setItems:[NSArray arrayWithObjects:debugButton, flexSpace, nil] animated:YES];
 }
 
 - (IBAction)sendCommandAction:(UIButton*)sender
@@ -400,7 +477,7 @@
 	if( learning )
 	{
 		learning = NO;
-		learnButton.highlighted = NO;
+//		learnButton.highlighted = NO;
 	}
 }
 
@@ -439,13 +516,13 @@
 	[connectedPeripheral readValueForCharacteristic:GCACResponseCharacteristic];
 }
 
-- (IBAction)learn:(UIButton*)sender
+- (IBAction)learn:(id)sender
 {
 	// Schedule this on the main thread so we can change the button's state
 	[self performSelectorOnMainThread:@selector(toggleLearningMode) withObject:nil waitUntilDone:NO];
 }
 
-- (IBAction)toggleDebugAction:(UIButton *)sender
+- (IBAction)toggleDebugAction:(id)sender
 {
 	// Schedule this on the main thread so we can change the button's state
 	[self performSelectorOnMainThread:@selector(toggleDebugMode) withObject:nil waitUntilDone:NO];

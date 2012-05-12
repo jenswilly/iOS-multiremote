@@ -9,7 +9,7 @@
 #import <UIKit/UIKit.h>
 #import <CoreBluetooth/CoreBluetooth.h>
 
-@interface ViewController : UIViewController <CBCentralManagerDelegate, CBPeripheralDelegate, UIActionSheetDelegate>
+@interface ViewController : UIViewController <CBCentralManagerDelegate, CBPeripheralDelegate, UIActionSheetDelegate, UIScrollViewDelegate>
 {
 	NSTimer *scanTimer;
 	BOOL learning;
@@ -22,13 +22,16 @@
 @property (weak) CBService *GCACService;
 @property (weak) CBCharacteristic *GCACCommandCharacteristic;
 @property (weak) CBCharacteristic *GCACResponseCharacteristic;
-@property (weak, nonatomic) IBOutlet UIButton *learnButton;
-@property (weak, nonatomic) IBOutlet UIButton *debugButton;
-@property (weak, nonatomic) IBOutlet UIButton *scanButton;
-
 @property (weak, nonatomic) IBOutlet UITextView *textView;
 @property (weak, nonatomic) IBOutlet UIView *debugView;
-@property (strong, nonatomic) IBOutletCollection(UIButton) NSArray *mustBeConnectedButtons;
+@property (weak, nonatomic) IBOutlet UIScrollView *mainScroller;
+@property (strong, nonatomic) IBOutlet UIBarButtonItem *learnButton;
+@property (strong, nonatomic) IBOutlet UIBarButtonItem *debugButton;
+@property (strong, nonatomic) IBOutlet UIBarButtonItem *scanButton;
+@property (strong, nonatomic) IBOutlet UIBarButtonItem *flexSpace;
+@property (weak, nonatomic) IBOutlet UIToolbar *toolbar;
+@property (weak, nonatomic) IBOutlet UIScrollView *pageLabelScroller;
+
 
 - (IBAction)scanAction:(id)sender;
 - (IBAction)sendCommandAction:(id)sender;
@@ -39,7 +42,7 @@
 - (IBAction)sendLearnAction:(id)sender;
 - (IBAction)sendTAction:(id)sender;
 - (IBAction)sendYAction:(id)sender;
-- (IBAction)learn:(UIButton*)sender;
-- (IBAction)toggleDebugAction:(UIButton *)sender;
+- (IBAction)learn:(id)sender;
+- (IBAction)toggleDebugAction:(id)sender;
 
 @end

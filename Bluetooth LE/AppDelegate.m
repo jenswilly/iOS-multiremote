@@ -19,6 +19,8 @@ static NSString* const kUserDefaults_PreferredDeviceKey = @"kUserDefaults_Prefer
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
     // Override point for customization after application launch.
+	[self setAppearance];
+	
     return YES;
 }
 							
@@ -78,5 +80,10 @@ static NSString* const kUserDefaults_PreferredDeviceKey = @"kUserDefaults_Prefer
 	NSData *UUIDData = [[NSUserDefaults standardUserDefaults] objectForKey:kUserDefaults_PreferredDeviceKey];
 	if( UUIDData != nil )
 		preferredDeviceUUID = [CBUUID UUIDWithData:UUIDData];
+}
+
+- (void)setAppearance
+{
+	[[UIToolbar appearance] setBackgroundImage:[UIImage imageNamed:@"toolbar.png"] forToolbarPosition:UIToolbarPositionAny barMetrics:UIBarMetricsDefault];
 }
 @end
