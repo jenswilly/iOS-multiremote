@@ -2,7 +2,13 @@
 
 This is the iOS app source code for the Bluetooth LE enabled multi-remote controller project. Read more about the project (including schematics and board layouts) here: [http://atomslagstyrken.dk/arduino/tag/remotecontrol/](http://atomslagstyrken.dk/arduino/tag/remotecontrol/).
 
-## Comments
+## To-do
+
+- XML file parser for an _iTunes File Sharing_ document specifying the button layout.  
+Layout should be in defined in pages and either rows/columns or coordinates and button specification should be something like button color, text or image (choose between available or add own).
+- Maybe supress "device disconnected" warnings if possible?
+
+## Progress
 
 ### 2012-05-12
 - New icon: ![Icon](https://github.com/jenswilly/iOS-multiremote/blob/master/Resources/App%20Icon%20%5BSquared%5D/Icon.png?raw=true)

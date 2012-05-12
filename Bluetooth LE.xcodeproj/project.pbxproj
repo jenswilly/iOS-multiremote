@@ -43,6 +43,8 @@
 		47473527155EEA83008C5B84 /* Icon-Small@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 4747351D155EEA83008C5B84 /* Icon-Small@2x.png */; };
 		47473528155EEA83008C5B84 /* Icon.png in Resources */ = {isa = PBXBuildFile; fileRef = 4747351E155EEA83008C5B84 /* Icon.png */; };
 		47473529155EEA83008C5B84 /* Icon@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 4747351F155EEA83008C5B84 /* Icon@2x.png */; };
+		47473532155F0015008C5B84 /* Default.png in Resources */ = {isa = PBXBuildFile; fileRef = 47473530155F0015008C5B84 /* Default.png */; };
+		47473533155F0015008C5B84 /* Default@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 47473531155F0015008C5B84 /* Default@2x.png */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -91,6 +93,8 @@
 		4747351F155EEA83008C5B84 /* Icon@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Icon@2x.png"; sourceTree = "<group>"; };
 		47473520155EEA83008C5B84 /* iTunesArtwork.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = iTunesArtwork.png; sourceTree = "<group>"; };
 		47473521155EEA83008C5B84 /* iTunesArtwork@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "iTunesArtwork@2x.png"; sourceTree = "<group>"; };
+		47473530155F0015008C5B84 /* Default.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Default.png; sourceTree = "<group>"; };
+		47473531155F0015008C5B84 /* Default@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Default@2x.png"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -195,6 +199,8 @@
 		474734E1155D9138008C5B84 /* Images */ = {
 			isa = PBXGroup;
 			children = (
+				47473530155F0015008C5B84 /* Default.png */,
+				47473531155F0015008C5B84 /* Default@2x.png */,
 				474734F7155D94A2008C5B84 /* background.png */,
 				474734F8155D94A2008C5B84 /* background@2x.png */,
 				474734E3155D9155008C5B84 /* btn_1.png */,
@@ -293,6 +299,8 @@
 				47473527155EEA83008C5B84 /* Icon-Small@2x.png in Resources */,
 				47473528155EEA83008C5B84 /* Icon.png in Resources */,
 				47473529155EEA83008C5B84 /* Icon@2x.png in Resources */,
+				47473532155F0015008C5B84 /* Default.png in Resources */,
+				47473533155F0015008C5B84 /* Default@2x.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
