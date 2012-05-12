@@ -4,6 +4,9 @@ This is the iOS app source code for the Bluetooth LE enabled multi-remote contro
 
 ## Comments
 
+### 2012-05-12
+- New icon: ![Icon](https://github.com/jenswilly/iOS-multiremote/blob/master/Resources/App%20Icon%20%5BSquared%5D/Icon.png?raw=true)
+
 ### 2012-05-11
 - Updated interface a bit.
 - The app now attempts to connect automatically when becoming active. Command buttons are first enabled when a device is connected.
