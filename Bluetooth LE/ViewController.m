@@ -242,8 +242,9 @@
 	[self print:@"Peripheral disconnected"];
 	self.connectedPeripheral = nil;
 	
-	// Disable all buttons requiring a connection
+	// Disable all buttons requiring a connection and show the scan button
 	[mustBeConnectedButtons enumerateObjectsUsingBlock:^(UIButton *obj, NSUInteger idx, BOOL *stop) {obj.enabled = NO;}];
+	scanButton.hidden = NO;
 }
 
 - (void)centralManager:(CBCentralManager *)central didFailToConnectPeripheral:(CBPeripheral *)peripheral error:(NSError *)error
