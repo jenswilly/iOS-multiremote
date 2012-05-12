@@ -100,7 +100,7 @@
 - (void)populateTitleLabelScroller
 {
 	/// TEMP:
-	NSArray *pageTitles = [NSArray arrayWithObjects:@"TV", @"DVD", @"Other stuff", nil];
+	NSArray *pageTitles = [NSArray arrayWithObjects:@"TV", @"DVD", @"Apple TV", nil];
 	CGFloat xPos = 0;
 	CGFloat maxX = 0;
 	
@@ -109,6 +109,7 @@
 		// Create label
 		UILabel *label = [[UILabel alloc] initWithFrame:CGRectZero];
 		label.backgroundColor = [UIColor clearColor];
+		label.font = [UIFont boldSystemFontOfSize:[UIFont systemFontSize]];
 		label.textColor = [UIColor whiteColor];
 		label.shadowColor = [UIColor blackColor];
 		label.shadowOffset = CGSizeMake( 0, 1 );
