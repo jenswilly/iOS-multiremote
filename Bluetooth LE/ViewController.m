@@ -9,18 +9,24 @@
 #import "ViewController.h"
 #import "CBUUID+Utils.h"
 #import "MBProgressHUD.h"
+#import "TBXML.h"
 
 #define UUID_GCAC_SERVICE @"b8b96269-562a-408f-8155-0b45f21c7774"
 #define UUID_DEVICE_INFORMATION @"180a"
 #define UUID_COMMAND_CHARATERISTIC @"bf33aeaf-8653-4841-89c8-330fa4f13346"
 #define UUID_RESPONSE_CHARACTERISTIC @"51494780-28c9-4502-87f1-c23881c70300"
 
+// Coordinates for buttons
+static const CGFloat xCoords[] = {24, 117, 210};
+static const CGFloat yCoords[] = {7, 101, 195, 289};
+
 @interface ViewController ()
 - (void)print:(NSString*)text;
 - (void)scanTimeout:(NSTimer*)timer;
 - (void)toggleDebugMode;
 - (void)toggleLearningMode;
-- (void)populateTitleLabelScroller;
+- (void)populateTitleLabelScroller:(NSArray*)pageTitles;
+- (void)parseXMLFile:(NSString*)xmlFileName;
 
 @end
 
@@ -56,9 +62,8 @@
 	[scanButton setBackgroundImage:[UIImage imageNamed:@"topbtn_scan.png"] forState:UIControlStateNormal barMetrics:UIBarMetricsDefault];
 	[learnButton setBackgroundImage:[UIImage imageNamed:@"topbtn_learn.png"] forState:UIControlStateNormal barMetrics:UIBarMetricsDefault];
 	
-	// Configure scrollers
-	mainScroller.contentSize = CGSizeMake( mainScroller.bounds.size.width * 2, mainScroller.bounds.size.height );
-	[self populateTitleLabelScroller];
+	// Load xml
+	[self parseXMLFile:@"remote.xml"];
 	
 	// Disable all buttons requiring a connection
 	[mainScroller.subviews enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
@@ -97,10 +102,7 @@
 
 #pragma mark - Private methods
 
-- (void)populateTitleLabelScroller
-{
-	/// TEMP:
-	NSArray *pageTitles = [NSArray arrayWithObjects:@"TV", @"DVD", @"Apple TV", nil];
+- (void)populateTitleLabelScroller:(NSArray*)pageTitles{
 	CGFloat xPos = 0;
 	CGFloat maxX = 0;
 	
@@ -564,4 +566,94 @@
 	[self print:@"Sending \"Y-000\""];
 	[connectedPeripheral writeValue:[@"Y-000" dataUsingEncoding:NSUTF8StringEncoding] forCharacteristic:GCACCommandCharacteristic type:CBCharacteristicWriteWithResponse];
 }
+
+#pragma mark - XML parser methods
+
+- (void)parseXMLFile:(NSString*)xmlFileName
+{
+	/// TEMP: get from iTunes documents instead
+	NSError *error = nil;
+	TBXML *xml = [TBXML newTBXMLWithXMLFile:xmlFileName error:&error];
+	NSAssert( error == nil, @"Error opening xml file: %@", [error localizedDescription] );
+	
+	// Iterate pages
+	TBXMLElement *page = [TBXML childElementNamed:@"page" parentElement:xml.rootXMLElement];
+	NSMutableArray *pageNames = [NSMutableArray array];
+	CGFloat pageOffset = 0;
+	while( page )
+	{
+		int x=0, y=0;	// Coordinates
+		NSString *pageName = [TBXML valueOfAttributeNamed:@"name" forElement:page];
+		[pageNames addObject:pageName];
+		DEBUG_LOG( @"Found page '%@'", pageName );
+		
+		// Iterate rows
+		TBXMLElement *row = [TBXML childElementNamed:@"row" parentElement:page];
+		while( row )
+		{
+			// Iterate buttons
+			TBXMLElement *button = [TBXML childElementNamed:@"button" parentElement:row];
+			while( button )
+			{
+				// Extract attributes
+				NSString *color = [TBXML valueOfAttributeNamed:@"color" forElement:button];
+				NSString *text = [TBXML valueOfAttributeNamed:@"text" forElement:button];
+				NSString *image = [TBXML valueOfAttributeNamed:@"image" forElement:button];
+				NSUInteger number = [[TBXML valueOfAttributeNamed:@"id" forElement:button] intValue];
+				
+				// Make sure we have color and either text or image
+				if( [color length] > 0 && ([text length] > 0 || [image length] > 0) )
+				{
+					// Create and congure button
+					UIButton *btn = [UIButton buttonWithType:UIButtonTypeCustom];
+					btn.frame = CGRectMake( xCoords[x] + pageOffset, yCoords[y], 86, 86 );
+					[btn setBackgroundImage:[UIImage imageNamed:[NSString stringWithFormat:@"btn_%@.png", color]] forState:UIControlStateNormal];
+					
+					// Do we have text?
+					if( [text length] > 0 )
+					{
+						// Yes: configure label
+						btn.titleLabel.textColor = [UIColor whiteColor];
+						btn.titleLabel.shadowColor = [UIColor blackColor];
+						btn.titleLabel.shadowOffset = CGSizeMake( 0, 1 );
+						btn.titleLabel.font = [UIFont boldSystemFontOfSize:15];
+						[btn setTitle:text forState:UIControlStateNormal];
+					}
+					else 
+					{
+						// Otherwise we must have an image: set image
+						[btn setImage:[UIImage imageNamed:image] forState:UIControlStateNormal];
+					}
+					
+					btn.tag = number;
+					[btn addTarget:self action:@selector(sendCommandAction:) forControlEvents:UIControlEventTouchUpInside];
+					[mainScroller addSubview:btn];
+					
+				}
+				
+				// Next button
+				NSAssert( x <= 2, @"Too many buttons in row: %s", row->text );
+				x++;
+				button = [TBXML nextSiblingNamed:@"button" searchFromElement:button];
+			}
+			
+			// Next row
+			x = 0;
+			NSAssert( y <= 3, @"Too many rows in page: %s", page->text );
+			y++;
+			row = [TBXML nextSiblingNamed:@"row" searchFromElement:row];
+		}
+		
+		// Next page
+		pageOffset += mainScroller.bounds.size.width;
+		page = [TBXML nextSiblingNamed:@"page" searchFromElement:page];
+	}
+	
+	// Set content size
+	mainScroller.contentSize = CGSizeMake( pageOffset, mainScroller.bounds.size.height );
+
+	// Set page titles
+	[self populateTitleLabelScroller:pageNames];
+}
+
 @end
