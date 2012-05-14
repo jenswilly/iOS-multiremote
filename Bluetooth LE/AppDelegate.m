@@ -19,11 +19,29 @@ static NSString* const kUserDefaults_PreferredDeviceKey = @"kUserDefaults_Prefer
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
     // Override point for customization after application launch.
+	[self.window makeKeyAndVisible];
+	[self showSplash];
 	[self setAppearance];
 	
     return YES;
 }
-							
+	
+- (void)showSplash
+{
+	DEBUG_POSITION;
+	UIImageView *splashView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"Default.png"]];
+	[self.window addSubview:splashView];
+	
+	CGRect frame = CGRectInset( splashView.frame, -splashView.frame.size.width, -splashView.frame.size.height );
+	[UIView animateWithDuration:0.5 delay:1 options:0 animations:^{
+		DEBUG_LOG( @"Animating: %@", splashView ); 
+		splashView.alpha = 0;
+		splashView.frame = frame;
+	} completion:^(BOOL finished) {
+		[splashView removeFromSuperview];
+	}];
+}
+
 - (void)applicationWillResignActive:(UIApplication *)application
 {
 	// Sent when the application is about to move from active to inactive state. This can occur for certain types of temporary interruptions (such as an incoming phone call or SMS message) or when the user quits the application and it begins the transition to the background state.

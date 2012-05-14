@@ -44,5 +44,6 @@
 - (IBAction)sendYAction:(id)sender;
 - (IBAction)learn:(id)sender;
 - (IBAction)toggleDebugAction:(id)sender;
+- (IBAction)debug1Action:(id)sender;
 
 @end

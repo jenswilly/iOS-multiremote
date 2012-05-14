@@ -165,7 +165,24 @@ static const CGFloat yCoords[] = {7, 101, 195, 289};
 {
 	// Toggle recording
 	learning = !learning;
-//	learnButton.highlighted = learning;
+	
+	// Change font color on all buttons
+	[mainScroller.subviews enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+		if( [obj isKindOfClass:[UIButton class]] )
+		{
+			UIButton *button = (UIButton*)obj;	// Typecast
+			if( learning )
+			{
+				[button setTitleColor:[UIColor redColor] forState:UIControlStateNormal];
+				[button setTitleShadowColor:[UIColor whiteColor] forState:UIControlStateNormal];
+			}
+			else 
+			{
+				[button setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
+				[button setTitleShadowColor:[UIColor whiteColor] forState:UIControlStateNormal];
+			}
+		}
+	}];
 }
 
 - (void)print:(NSString *)text
@@ -480,7 +497,16 @@ static const CGFloat yCoords[] = {7, 101, 195, 289};
 	if( learning )
 	{
 		learning = NO;
-//		learnButton.highlighted = NO;
+		
+		// Change font color on all buttons
+		[mainScroller.subviews enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+			if( [obj isKindOfClass:[UIButton class]] )
+			{
+				UIButton *button = (UIButton*)obj;	// Typecast
+				[button setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
+				[button setTitleShadowColor:[UIColor whiteColor] forState:UIControlStateNormal];
+			}
+		}];
 	}
 }
 
@@ -529,6 +555,36 @@ static const CGFloat yCoords[] = {7, 101, 195, 289};
 {
 	// Schedule this on the main thread so we can change the button's state
 	[self performSelectorOnMainThread:@selector(toggleDebugMode) withObject:nil waitUntilDone:NO];
+}
+
+- (IBAction)debug1Action:(id)sender
+{
+	// Toggle enabled status of buttons
+	UIButton *first = [mainScroller.subviews objectAtIndex:0];
+	BOOL enabled = !first.enabled;
+
+	if( enabled )
+	{
+		// Enable all buttons
+		[mainScroller.subviews enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+			if( [obj isKindOfClass:[UIButton class]] )
+				[(UIButton*)obj setEnabled:YES];
+		}];
+		
+		// Show learn button
+		[toolbar setItems:[NSArray arrayWithObjects:debugButton, flexSpace, learnButton, nil] animated:YES];
+	}
+	else 
+	{
+		// Enable all buttons
+		[mainScroller.subviews enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+			if( [obj isKindOfClass:[UIButton class]] )
+				[(UIButton*)obj setEnabled:NO];
+		}];
+		
+		// Show learn button
+		[toolbar setItems:[NSArray arrayWithObjects:debugButton, flexSpace, scanButton, nil] animated:YES];
+	}
 }
 
 - (IBAction)sendLearnAction:(id)sender
@@ -613,11 +669,13 @@ static const CGFloat yCoords[] = {7, 101, 195, 289};
 					if( [text length] > 0 )
 					{
 						// Yes: configure label
-						btn.titleLabel.textColor = [UIColor whiteColor];
-						btn.titleLabel.shadowColor = [UIColor blackColor];
+						[btn setTitle:text forState:UIControlStateNormal];
+						[btn setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
+						[btn setTitleColor:[UIColor grayColor] forState:UIControlStateDisabled];
+						[btn setTitleShadowColor:[UIColor whiteColor] forState:UIControlStateNormal];
+						[btn setTitleShadowColor:[UIColor clearColor] forState:UIControlStateDisabled];
 						btn.titleLabel.shadowOffset = CGSizeMake( 0, 1 );
 						btn.titleLabel.font = [UIFont boldSystemFontOfSize:15];
-						[btn setTitle:text forState:UIControlStateNormal];
 					}
 					else 
 					{

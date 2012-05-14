@@ -62,6 +62,21 @@
                                             <action selector="clearAction:" destination="2" eventType="touchUpInside" id="mph-64-eEk"/>
                                         </connections>
                                     </button>
+                                    <button opaque="NO" alpha="0.5" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" id="zkT-jf-HlU">
+                                        <rect key="frame" x="207" y="5.5" width="49" height="18"/>
+                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                        <fontDescription key="fontDescription" type="system" pointSize="10"/>
+                                        <state key="normal" title="TGL">
+                                            <color key="titleColor" cocoaTouchSystemColor="darkTextColor"/>
+                                            <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                        </state>
+                                        <state key="highlighted">
+                                            <color key="titleColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                        </state>
+                                        <connections>
+                                            <action selector="debug1Action:" destination="2" eventType="touchUpInside" id="BZL-dO-vwo"/>
+                                        </connections>
+                                    </button>
                                     <view contentMode="scaleToFill" id="U2a-io-Rts">
                                         <rect key="frame" x="0.0" y="0.0" width="320" height="1"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
@@ -120,6 +135,7 @@
             <source key="sourceIdentifier" type="project" relativePath="./Classes/ViewController.h"/>
             <relationships>
                 <relationship kind="action" name="clearAction:"/>
+                <relationship kind="action" name="debug1Action:"/>
                 <relationship kind="action" name="disconnectAction:"/>
                 <relationship kind="action" name="forgetPreferredAction:"/>
                 <relationship kind="action" name="learn:"/>
