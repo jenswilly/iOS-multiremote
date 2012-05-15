@@ -3,12 +3,12 @@
 	<page name="TV">
 		<row>
 			<button id="1" color="green" text="C+" />
-			<button id="99" color="orange" text="V+" />
+			<button id="2" color="orange" text="V+" />
 			<button id="3" color="orange" text="MUTE" />
 		</row>
 		<row>
-			<button id="2" color="green" text="C-" />
-			<button id="99" color="orange" text="V-" />
+			<button id="4" color="green" text="C-" />
+			<button id="5" color="orange" text="V-" />
 			<button />
 		</row>
 		<row>
@@ -19,28 +19,28 @@
 		<row>
 			<button />
 			<button />
-			<button id="4" color="red" text="PWR" />
+			<button id="6" color="red" text="PWR" />
 		</row>
 	</page>
 	<page name="Channels">
 		<row>
-			<button id="16" color="lightblue" text="1" />
-			<button id="17" color="lightblue" text="2" />
-			<button id="18" color="lightblue" text="3" />
+			<button id="7" color="lightblue" text="1" />
+			<button id="8" color="lightblue" text="2" />
+			<button id="9" color="lightblue" text="3" />
 		</row>
 		<row>
-			<button id="19" color="lightblue" text="4" />
-			<button id="20" color="lightblue" text="5" />
-			<button id="21" color="lightblue" text="6" />
+			<button id="10" color="lightblue" text="4" />
+			<button id="11" color="lightblue" text="5" />
+			<button id="12" color="lightblue" text="6" />
 		</row>
 		<row>
-			<button id="22" color="lightblue" text="7" />
-			<button id="23" color="lightblue" text="8" />
-			<button id="24" color="lightblue" text="9" />
+			<button id="13" color="lightblue" text="7" />
+			<button id="14" color="lightblue" text="8" />
+			<button id="15" color="lightblue" text="9" />
 		</row>
 		<row>
 			<button />
-			<button id="15" color="lightblue" text="0" />
+			<button id="16" color="lightblue" text="0" />
 			<button />
 		</row>
 	</page>

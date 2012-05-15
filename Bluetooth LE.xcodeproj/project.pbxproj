@@ -67,6 +67,9 @@
 		47473581156048EE008C5B84 /* btn_yellow@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 4747356F156048EE008C5B84 /* btn_yellow@2x.png */; };
 		4747358815604E34008C5B84 /* TBXML.m in Sources */ = {isa = PBXBuildFile; fileRef = 4747358615604E34008C5B84 /* TBXML.m */; };
 		4747358D15605017008C5B84 /* remote.xml in Resources */ = {isa = PBXBuildFile; fileRef = 4747358C15605017008C5B84 /* remote.xml */; };
+		47C058F61561B36500F35DFD /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 47C058F51561B36500F35DFD /* AudioToolbox.framework */; };
+		47C058FD1561BAD800F35DFD /* tock.aif in Resources */ = {isa = PBXBuildFile; fileRef = 47C058FC1561BAD800F35DFD /* tock.aif */; };
+		47C058FF1561BB6200F35DFD /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 47C058FE1561BB6200F35DFD /* AVFoundation.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -140,6 +143,9 @@
 		4747358615604E34008C5B84 /* TBXML.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TBXML.m; sourceTree = "<group>"; };
 		4747358715604E34008C5B84 /* TBXML.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TBXML.h; sourceTree = "<group>"; };
 		4747358C15605017008C5B84 /* remote.xml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = remote.xml; sourceTree = "<group>"; };
+		47C058F51561B36500F35DFD /* AudioToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioToolbox.framework; path = System/Library/Frameworks/AudioToolbox.framework; sourceTree = SDKROOT; };
+		47C058FC1561BAD800F35DFD /* tock.aif */ = {isa = PBXFileReference; lastKnownFileType = file; path = tock.aif; sourceTree = "<group>"; };
+		47C058FE1561BB6200F35DFD /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -147,6 +153,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				47C058FF1561BB6200F35DFD /* AVFoundation.framework in Frameworks */,
+				47C058F61561B36500F35DFD /* AudioToolbox.framework in Frameworks */,
 				473C9F7D154F42C700842854 /* CoreBluetooth.framework in Frameworks */,
 				473C9F60154F42A700842854 /* UIKit.framework in Frameworks */,
 				473C9F62154F42A700842854 /* Foundation.framework in Frameworks */,
@@ -179,6 +187,8 @@
 		473C9F5E154F42A700842854 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				47C058FE1561BB6200F35DFD /* AVFoundation.framework */,
+				47C058F51561B36500F35DFD /* AudioToolbox.framework */,
 				473C9F7C154F42C700842854 /* CoreBluetooth.framework */,
 				473C9F5F154F42A700842854 /* UIKit.framework */,
 				473C9F61154F42A700842854 /* Foundation.framework */,
@@ -219,6 +229,7 @@
 		473C9F7E154F459F00842854 /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				47C058FC1561BAD800F35DFD /* tock.aif */,
 				4747358C15605017008C5B84 /* remote.xml */,
 				474734E1155D9138008C5B84 /* Images */,
 				473C9F7F154F45B800842854 /* App Icon [Squared] */,
@@ -398,6 +409,7 @@
 				47473580156048EE008C5B84 /* btn_yellow.png in Resources */,
 				47473581156048EE008C5B84 /* btn_yellow@2x.png in Resources */,
 				4747358D15605017008C5B84 /* remote.xml in Resources */,
+				47C058FD1561BAD800F35DFD /* tock.aif in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

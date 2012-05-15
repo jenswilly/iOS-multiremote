@@ -8,11 +8,13 @@
 
 #import <UIKit/UIKit.h>
 #import <CoreBluetooth/CoreBluetooth.h>
+#import <AVFoundation/AVFoundation.h>
 
 @interface ViewController : UIViewController <CBCentralManagerDelegate, CBPeripheralDelegate, UIActionSheetDelegate, UIScrollViewDelegate>
 {
 	NSTimer *scanTimer;
 	BOOL learning;
+	AVAudioPlayer *audioPlayer;
 }
 
 @property (strong) CBCentralManager *centralManager;

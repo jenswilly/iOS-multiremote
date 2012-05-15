@@ -54,6 +54,12 @@ static const CGFloat yCoords[] = {7, 101, 195, 289};
 	peripherals = [[NSMutableArray alloc] init];
 	peripheralNames = [[NSMutableDictionary alloc] init];	
 	
+	// Load sound
+	NSError *error = nil;
+	audioPlayer = [[AVAudioPlayer alloc] initWithContentsOfURL:[NSURL fileURLWithPath:[[NSBundle mainBundle] pathForResource:@"tock" ofType:@"aif"]] error:&error];
+	NSAssert( error == nil, @"Error loading sound: %@", [error localizedDescription] );
+    [audioPlayer prepareToPlay];
+	
 	// Set toolbar items
 	[toolbar setItems:[NSArray arrayWithObjects:debugButton, flexSpace, nil] animated:YES];
 	 
@@ -493,6 +499,9 @@ static const CGFloat yCoords[] = {7, 101, 195, 289};
 	[self print:[NSString stringWithFormat:@"Sending \"%@", commandString]];
 	[connectedPeripheral writeValue:[commandString dataUsingEncoding:NSUTF8StringEncoding] forCharacteristic:GCACCommandCharacteristic type:CBCharacteristicWriteWithResponse];
 
+	// Play sound
+	[audioPlayer play];
+	
 	// Not learning anymore
 	if( learning )
 	{
@@ -684,7 +693,7 @@ static const CGFloat yCoords[] = {7, 101, 195, 289};
 					}
 					
 					btn.tag = number;
-					[btn addTarget:self action:@selector(sendCommandAction:) forControlEvents:UIControlEventTouchUpInside];
+					[btn addTarget:self action:@selector(sendCommandAction:) forControlEvents:UIControlEventTouchDown];
 					[mainScroller addSubview:btn];
 					
 				}
