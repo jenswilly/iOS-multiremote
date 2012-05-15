@@ -636,6 +636,11 @@ static const CGFloat yCoords[] = {7, 101, 195, 289};
 
 - (void)parseXMLFile:(NSString*)xmlFileName
 {
+	// Read layout spec file
+	NSString *layoutPlistFilePath = [[NSBundle mainBundle] pathForResource:@"coordinates" ofType:@"plist"];
+	NSDictionary *layoutInfo = [NSDictionary dictionaryWithContentsOfFile:layoutPlistFilePath];
+	NSAssert( layoutInfo != nil, @"Error opening layout coordinates file!" );
+	
 	/// TEMP: get from iTunes documents instead
 	NSError *error = nil;
 	TBXML *xml = [TBXML newTBXMLWithXMLFile:xmlFileName error:&error];
@@ -652,10 +657,29 @@ static const CGFloat yCoords[] = {7, 101, 195, 289};
 		[pageNames addObject:pageName];
 		DEBUG_LOG( @"Found page '%@'", pageName );
 		
+		// Which layout?
+		NSString *layout = [TBXML valueOfAttributeNamed:@"layout" forElement:page];
+		NSDictionary *pageLayoutInfo = [layoutInfo objectForKey:layout];
+		NSAssert1( pageLayoutInfo, @"Unknown page layout: %@", layout );
+		
+		// Get coords from plist dictionary
+		int columns = [[pageLayoutInfo objectForKey:@"columns"] intValue];
+		int rows = [[pageLayoutInfo objectForKey:@"rows"] intValue];
+		NSString *filenameFormat = [pageLayoutInfo objectForKey:@"filenameFormat"];
+		CGFloat initialX = [[pageLayoutInfo objectForKey:@"initialX"] floatValue];
+		CGFloat initialY = [[pageLayoutInfo objectForKey:@"initialY"] floatValue];
+		CGFloat stepX = [[pageLayoutInfo objectForKey:@"stepX"] floatValue];
+		CGFloat stepY = [[pageLayoutInfo objectForKey:@"stepY"] floatValue];
+		
 		// Iterate rows
+		CGFloat xPos;
+		CGFloat yPos = initialY;	// Initial y position
 		TBXMLElement *row = [TBXML childElementNamed:@"row" parentElement:page];
 		while( row )
 		{
+			// Reset x position
+			xPos = initialX;
+			
 			// Iterate buttons
 			TBXMLElement *button = [TBXML childElementNamed:@"button" parentElement:row];
 			while( button )
@@ -671,8 +695,9 @@ static const CGFloat yCoords[] = {7, 101, 195, 289};
 				{
 					// Create and congure button
 					UIButton *btn = [UIButton buttonWithType:UIButtonTypeCustom];
-					btn.frame = CGRectMake( xCoords[x] + pageOffset, yCoords[y], 86, 86 );
-					[btn setBackgroundImage:[UIImage imageNamed:[NSString stringWithFormat:@"btn_%@.png", color]] forState:UIControlStateNormal];
+					UIImage *img = [UIImage imageNamed:[NSString stringWithFormat:filenameFormat, color]];
+					[btn setBackgroundImage:img forState:UIControlStateNormal];
+					btn.frame = CGRectMake( xPos + pageOffset, yPos, img.size.width, img.size.height );
 					
 					// Do we have text?
 					if( [text length] > 0 )
@@ -699,14 +724,16 @@ static const CGFloat yCoords[] = {7, 101, 195, 289};
 				}
 				
 				// Next button
-				NSAssert( x <= 2, @"Too many buttons in row: %s", row->text );
+				xPos += stepX;
+				NSAssert( x < columns, @"Too many buttons in row: %s", row->text );
 				x++;
 				button = [TBXML nextSiblingNamed:@"button" searchFromElement:button];
 			}
 			
 			// Next row
+			yPos += stepY;
 			x = 0;
-			NSAssert( y <= 3, @"Too many rows in page: %s", page->text );
+			NSAssert( y < rows, @"Too many rows in page: %s", page->text );
 			y++;
 			row = [TBXML nextSiblingNamed:@"row" searchFromElement:row];
 		}

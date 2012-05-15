@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>medium_buttons</key>
+	<dict>
+		<key>initialX</key>
+		<integer>24</integer>
+		<key>initialY</key>
+		<integer>7</integer>
+		<key>stepX</key>
+		<integer>93</integer>
+		<key>stepY</key>
+		<integer>94</integer>
+		<key>columns</key>
+		<integer>3</integer>
+		<key>rows</key>
+		<integer>4</integer>
+		<key>filenameFormat</key>
+		<string>btn_%@.png</string>
+	</dict>
+	<key>large_buttons</key>
+	<dict>
+		<key>initialX</key>
+		<integer>0</integer>
+		<key>initialY</key>
+		<integer>31</integer>
+		<key>stepX</key>
+		<integer>107</integer>
+		<key>stepY</key>
+		<integer>107</integer>
+		<key>columns</key>
+		<integer>3</integer>
+		<key>rows</key>
+		<integer>3</integer>
+		<key>filenameFormat</key>
+		<string>btn_large_%@.png</string>
+	</dict>
+</dict>
+</plist>
