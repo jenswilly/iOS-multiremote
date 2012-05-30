@@ -4,12 +4,12 @@
 	<page name="TV" layout="large_buttons" >
 		<row>
 			<button id="1" color="green" text="C+" />
-			<button id="2" color="orange" text="V+" />
+			<button id="2" color="orange" text="V+" mode="repeat" />
 			<button id="3" color="red" text="PWR" />
 		</row>
 		<row>
 			<button id="4" color="green" text="C-" />
-			<button id="5" color="orange" text="V-" />
+			<button id="5" color="orange" text="V-" mode="repeat" />
 			<button id="6" />
 		</row>
 		<row>

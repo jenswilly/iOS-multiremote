@@ -10,11 +10,20 @@
 #import <CoreBluetooth/CoreBluetooth.h>
 #import <AVFoundation/AVFoundation.h>
 
+typedef enum
+{
+	CommandModeIdle,
+	CommandModeSingle,
+	CommandModeRepeat
+} CommandMode;
+
 @interface ViewController : UIViewController <CBCentralManagerDelegate, CBPeripheralDelegate, UIActionSheetDelegate, UIScrollViewDelegate>
 {
 	NSTimer *scanTimer;
 	BOOL learning;
 	AVAudioPlayer *audioPlayer;
+	NSUInteger currentCommandNumber;
+	CommandMode commandMode;
 }
 
 @property (strong) CBCentralManager *centralManager;
@@ -34,7 +43,6 @@
 @property (weak, nonatomic) IBOutlet UIToolbar *toolbar;
 @property (weak, nonatomic) IBOutlet UIScrollView *pageLabelScroller;
 
-
 - (IBAction)scanAction:(id)sender;
 - (IBAction)sendCommandAction:(id)sender;
 - (IBAction)disconnectAction:(id)sender;
@@ -47,5 +55,7 @@
 - (IBAction)learn:(id)sender;
 - (IBAction)toggleDebugAction:(id)sender;
 - (IBAction)debug1Action:(id)sender;
+- (IBAction)repeatCommand:(UIButton*)sender;
+- (IBAction)cancelRepeatCommand:(id)sender;
 
 @end

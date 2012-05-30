@@ -16,6 +16,8 @@
 #define UUID_COMMAND_CHARATERISTIC @"bf33aeaf-8653-4841-89c8-330fa4f13346"
 #define UUID_RESPONSE_CHARACTERISTIC @"51494780-28c9-4502-87f1-c23881c70300"
 
+#define COMMAND_NUMBER @"commandNumber"
+
 // Coordinates for buttons
 static const CGFloat xCoords[] = {24, 117, 210};
 static const CGFloat yCoords[] = {7, 101, 195, 289};
@@ -27,6 +29,7 @@ static const CGFloat yCoords[] = {7, 101, 195, 289};
 - (void)toggleLearningMode;
 - (void)populateTitleLabelScroller:(NSArray*)pageTitles;
 - (void)parseXMLFile:(NSString*)xmlFileName;
+- (void)sendCommand:(NSUInteger)commandNumber;
 
 @end
 
@@ -76,6 +79,8 @@ static const CGFloat yCoords[] = {7, 101, 195, 289};
 		if( [obj isKindOfClass:[UIButton class]] )
 			[(UIButton*)obj setEnabled:NO];
 	}];
+	
+	commandMode = CommandModeIdle;
 }
 
 - (void)viewDidUnload
@@ -194,8 +199,10 @@ static const CGFloat yCoords[] = {7, 101, 195, 289};
 - (void)print:(NSString *)text
 {
 	DEBUG_LOG( @"--> %@", text );
+#if DEBUG
 	textView.text = [textView.text stringByAppendingFormat:@"\r%@", text];
 	[textView scrollRangeToVisible:NSMakeRange( [textView.text length]-1, 1 )];
+#endif
 }
 
 - (void)scanTimeout:(NSTimer *)timer
@@ -234,6 +241,37 @@ static const CGFloat yCoords[] = {7, 101, 195, 289};
 		// Set toolbar items
 		[toolbar setItems:[NSArray arrayWithObjects:debugButton, flexSpace, scanButton, nil] animated:YES];
 		
+	}
+}
+
+- (void)sendCommand:(NSUInteger)commandNumber
+{
+	if( self.connectedPeripheral == nil )
+	{
+		[self print:@"Not connected."];
+		return;
+	}
+	
+	// Build command string
+	NSString *commandPrefix = (learning ? @"L" : @"S");
+	NSString *commandString = [NSString stringWithFormat:@"%@-%03d", commandPrefix, commandNumber];
+	[self print:[NSString stringWithFormat:@"Sending \"%@", commandString]];
+	[connectedPeripheral writeValue:[commandString dataUsingEncoding:NSUTF8StringEncoding] forCharacteristic:GCACCommandCharacteristic type:CBCharacteristicWriteWithResponse];
+	
+	// Not learning anymore
+	if( learning )
+	{
+		learning = NO;
+		
+		// Change font color on all buttons
+		[mainScroller.subviews enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+			if( [obj isKindOfClass:[UIButton class]] )
+			{
+				UIButton *button = (UIButton*)obj;	// Typecast
+				[button setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
+				[button setTitleShadowColor:[UIColor whiteColor] forState:UIControlStateNormal];
+			}
+		}];
 	}
 }
 
@@ -462,7 +500,10 @@ static const CGFloat yCoords[] = {7, 101, 195, 289};
 		return;
 	}
 	
-	[self print:@"Write characteristic done."];
+	// Should we continue to send the command?
+	if( commandMode == CommandModeRepeat )
+		// Yes
+		[self sendCommand:currentCommandNumber];
 }
 
 #pragma mark - Public methods
@@ -485,38 +526,32 @@ static const CGFloat yCoords[] = {7, 101, 195, 289};
 	[toolbar setItems:[NSArray arrayWithObjects:debugButton, flexSpace, nil] animated:YES];
 }
 
-- (IBAction)sendCommandAction:(UIButton*)sender
+- (IBAction)repeatCommand:(UIButton*)sender
 {
-	if( self.connectedPeripheral == nil )
-	{
-		[self print:@"Not connected."];
-		return;
-	}
-	
-	// Build command string
-	NSString *commandPrefix = (learning ? @"L" : @"S");
-	NSString *commandString = [NSString stringWithFormat:@"%@-%03d", commandPrefix, sender.tag];
-	[self print:[NSString stringWithFormat:@"Sending \"%@", commandString]];
-	[connectedPeripheral writeValue:[commandString dataUsingEncoding:NSUTF8StringEncoding] forCharacteristic:GCACCommandCharacteristic type:CBCharacteristicWriteWithResponse];
+	currentCommandNumber = sender.tag;
+	commandMode = CommandModeRepeat;
 
 	// Play sound
 	[audioPlayer play];
 	
-	// Not learning anymore
-	if( learning )
-	{
-		learning = NO;
-		
-		// Change font color on all buttons
-		[mainScroller.subviews enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
-			if( [obj isKindOfClass:[UIButton class]] )
-			{
-				UIButton *button = (UIButton*)obj;	// Typecast
-				[button setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
-				[button setTitleShadowColor:[UIColor whiteColor] forState:UIControlStateNormal];
-			}
-		}];
-	}
+	// Send command
+	[self sendCommand:currentCommandNumber];
+}
+
+/* Stops the repeatable command from transmitting.
+ */
+- (IBAction)cancelRepeatCommand:(id)sender
+{
+	// Stop repeating
+	commandMode = CommandModeIdle;
+}
+
+- (IBAction)sendCommandAction:(UIButton*)sender
+{
+	// Play sound
+	[audioPlayer play];
+	
+	[self sendCommand:sender.tag];
 }
 
 - (IBAction)disconnectAction:(id)sender
@@ -689,6 +724,7 @@ static const CGFloat yCoords[] = {7, 101, 195, 289};
 				NSString *text = [TBXML valueOfAttributeNamed:@"text" forElement:button];
 				NSString *image = [TBXML valueOfAttributeNamed:@"image" forElement:button];
 				NSUInteger number = [[TBXML valueOfAttributeNamed:@"id" forElement:button] intValue];
+				NSString *mode = [[TBXML valueOfAttributeNamed:@"mode" forElement:button] lowercaseString];
 				
 				// Make sure we have color and either text or image
 				if( [color length] > 0 && ([text length] > 0 || [image length] > 0) )
@@ -718,7 +754,16 @@ static const CGFloat yCoords[] = {7, 101, 195, 289};
 					}
 					
 					btn.tag = number;
-					[btn addTarget:self action:@selector(sendCommandAction:) forControlEvents:UIControlEventTouchDown];
+					if( [mode isEqualToString:@"touchdown"] )
+						[btn addTarget:self action:@selector(sendCommandAction:) forControlEvents:UIControlEventTouchDown];
+					else if( [mode isEqualToString:@"repeat"] )
+					{
+						[btn addTarget:self action:@selector(repeatCommand:) forControlEvents:UIControlEventTouchDown];
+						[btn addTarget:self action:@selector(cancelRepeatCommand:) forControlEvents:UIControlEventTouchUpInside];
+						[btn addTarget:self action:@selector(cancelRepeatCommand:) forControlEvents:UIControlEventTouchUpOutside];
+					}
+					else 
+						[btn addTarget:self action:@selector(sendCommandAction:) forControlEvents:UIControlEventTouchUpInside];
 					[mainScroller addSubview:btn];
 					
 				}
