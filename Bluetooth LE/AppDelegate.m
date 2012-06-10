@@ -8,7 +8,7 @@
 
 #import "AppDelegate.h"
 #import "CBUUID+Utils.h"
-#import "ViewController.h"
+#import "MainViewController.h"
 
 static NSString* const kUserDefaults_PreferredDeviceKey = @"kUserDefaults_PreferredDeviceKey";
 
@@ -18,7 +18,10 @@ static NSString* const kUserDefaults_PreferredDeviceKey = @"kUserDefaults_Prefer
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
-    // Override point for customization after application launch.
+	// Set split view controller's delegate (can't do this in IB for some reason)
+	if( UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad )
+		[(UISplitViewController*)_window.rootViewController setDelegate:[self mainViewController]];
+	
 	[self.window makeKeyAndVisible];
 	[self showSplash];
 	[self setAppearance];
@@ -29,10 +32,60 @@ static NSString* const kUserDefaults_PreferredDeviceKey = @"kUserDefaults_Prefer
 - (void)showSplash
 {
 	DEBUG_POSITION;
-	UIImageView *splashView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"Default.png"]];
-	[self.window addSubview:splashView];
 	
-	CGRect frame = CGRectInset( splashView.frame, -splashView.frame.size.width, -splashView.frame.size.height );
+	// Create image view with image that match device and orientation
+	UIImage *image;
+	CGAffineTransform transform = CGAffineTransformIdentity;
+	CGPoint origin = CGPointZero;
+	
+	if( UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad )
+	{
+		// iPad: which orientation?
+		[[UIDevice currentDevice] beginGeneratingDeviceOrientationNotifications];
+		UIDeviceOrientation orientation = [[UIDevice currentDevice] orientation];
+		if( UIDeviceOrientationIsLandscape( orientation ))
+		{
+			// We need to rotate image view
+			if( orientation == UIDeviceOrientationLandscapeLeft )
+			{
+				transform = CGAffineTransformMakeRotation( M_PI_2 );
+			//	origin = CGPointMake( -20, 0 );
+			}
+			else if( orientation == UIDeviceOrientationLandscapeRight )
+			{
+				transform = CGAffineTransformMakeRotation( -M_PI_2 );
+				origin = CGPointMake( 20, 0 );
+			}
+			
+			// Load image
+			image = [UIImage imageNamed:@"Default-Landscape.png"];
+			
+		}
+		else
+		{
+			// Rotate if upside-down
+			if( orientation == UIDeviceOrientationPortraitUpsideDown )
+				transform = CGAffineTransformMakeRotation( M_PI );
+			else
+				origin = CGPointMake( 0, 20 );
+			
+			image = [UIImage imageNamed:@"Default-Portrait.png"];
+		}
+	}
+	else
+		// iPhone
+		image = [UIImage imageNamed:@"Default.png"];
+	
+	
+	// Instantiate image view and adjust rotation and origin
+	UIImageView *splashView = [[UIImageView alloc] initWithImage:image];
+	[self.window addSubview:splashView];
+	splashView.transform = transform;
+	CGRect frame = splashView.frame;
+	frame.origin = origin;
+	splashView.frame = frame;
+	
+	frame = CGRectInset( splashView.frame, -splashView.frame.size.width, -splashView.frame.size.height );
 	[UIView animateWithDuration:0.5 delay:1 options:0 animations:^{
 		DEBUG_LOG( @"Animating: %@", splashView ); 
 		splashView.alpha = 0;
@@ -40,6 +93,24 @@ static NSString* const kUserDefaults_PreferredDeviceKey = @"kUserDefaults_Prefer
 	} completion:^(BOOL finished) {
 		[splashView removeFromSuperview];
 	}];
+}
+
+/* Returns the main view controller
+ */
+- (MainViewController*)mainViewController
+{
+	// iPhone or iPad?
+	if( UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad )
+	{
+		// iPad-specific interface here
+		UISplitViewController *splitViewController = (UISplitViewController*)_window.rootViewController;
+		return [splitViewController.viewControllers objectAtIndex:1];
+	}
+	else
+	{
+		// iPhone and iPod touch interface here
+		return (MainViewController*)_window.rootViewController;
+	}
 }
 
 - (void)applicationWillResignActive:(UIApplication *)application
@@ -65,11 +136,9 @@ static NSString* const kUserDefaults_PreferredDeviceKey = @"kUserDefaults_Prefer
 	[self loadPreferredDevice];
 	
 	// Connect if not already connected
-	ViewController *viewController = (ViewController*)_window.rootViewController;
+	MainViewController *viewController = [self mainViewController];
 	if( !viewController.connectedPeripheral )
-	{
 		[viewController scanAction:nil];
-	}
 }
 
 - (void)applicationWillTerminate:(UIApplication *)application

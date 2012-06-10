@@ -21,3 +21,6 @@ Layout should be in defined in pages and either rows/columns or coordinates and 
 
 ### 2012-05-09
 The first version is working! Yay!
+
+### 2012-06-07
+Began converting to universal app.

@@ -7,6 +7,14 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		472C18C41580B28B00240D73 /* MainStoryboard-iPad.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 472C18C31580B28B00240D73 /* MainStoryboard-iPad.storyboard */; };
+		472C18C91580B54000240D73 /* Default-Landscape.png in Resources */ = {isa = PBXBuildFile; fileRef = 472C18C51580B54000240D73 /* Default-Landscape.png */; };
+		472C18CA1580B54000240D73 /* Default-Landscape@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 472C18C61580B54000240D73 /* Default-Landscape@2x.png */; };
+		472C18CB1580B54000240D73 /* Default-Portrait.png in Resources */ = {isa = PBXBuildFile; fileRef = 472C18C71580B54000240D73 /* Default-Portrait.png */; };
+		472C18CC1580B54000240D73 /* Default-Portrait@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 472C18C81580B54000240D73 /* Default-Portrait@2x.png */; };
+		472C18D61580BE6700240D73 /* PageListViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 472C18D41580BE6700240D73 /* PageListViewController.m */; };
+		472C18DE1580DA8000240D73 /* metal_pattern.png in Resources */ = {isa = PBXBuildFile; fileRef = 472C18DC1580DA7F00240D73 /* metal_pattern.png */; };
+		472C18DF1580DA8000240D73 /* metal_pattern@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 472C18DD1580DA7F00240D73 /* metal_pattern@2x.png */; };
 		47309C30155AD5C60065F74E /* readme.md in Resources */ = {isa = PBXBuildFile; fileRef = 47309C2F155AD5C60065F74E /* readme.md */; };
 		473C9F60154F42A700842854 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 473C9F5F154F42A700842854 /* UIKit.framework */; };
 		473C9F62154F42A700842854 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 473C9F61154F42A700842854 /* Foundation.framework */; };
@@ -15,7 +23,7 @@
 		473C9F6C154F42A700842854 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 473C9F6B154F42A700842854 /* main.m */; };
 		473C9F70154F42A700842854 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 473C9F6F154F42A700842854 /* AppDelegate.m */; };
 		473C9F73154F42A700842854 /* MainStoryboard.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 473C9F71154F42A700842854 /* MainStoryboard.storyboard */; };
-		473C9F76154F42A700842854 /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 473C9F75154F42A700842854 /* ViewController.m */; };
+		473C9F76154F42A700842854 /* MainViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 473C9F75154F42A700842854 /* MainViewController.m */; };
 		473C9F7D154F42C700842854 /* CoreBluetooth.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 473C9F7C154F42C700842854 /* CoreBluetooth.framework */; };
 		473C9F8F154F48AD00842854 /* CBUUID+Utils.m in Sources */ = {isa = PBXBuildFile; fileRef = 473C9F8E154F48AD00842854 /* CBUUID+Utils.m */; };
 		474734F9155D94A2008C5B84 /* background.png in Resources */ = {isa = PBXBuildFile; fileRef = 474734F7155D94A2008C5B84 /* background.png */; };
@@ -67,6 +75,11 @@
 		47473581156048EE008C5B84 /* btn_yellow@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 4747356F156048EE008C5B84 /* btn_yellow@2x.png */; };
 		4747358815604E34008C5B84 /* TBXML.m in Sources */ = {isa = PBXBuildFile; fileRef = 4747358615604E34008C5B84 /* TBXML.m */; };
 		4747358D15605017008C5B84 /* remote.xml in Resources */ = {isa = PBXBuildFile; fileRef = 4747358C15605017008C5B84 /* remote.xml */; };
+		477B11C51584395F00930672 /* cell_bg.png in Resources */ = {isa = PBXBuildFile; fileRef = 477B11C31584395F00930672 /* cell_bg.png */; };
+		477B11C61584395F00930672 /* cell_bg@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 477B11C41584395F00930672 /* cell_bg@2x.png */; };
+		477B11CB15843A6300930672 /* PageCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 477B11CA15843A6300930672 /* PageCell.m */; };
+		477B11CE15843BC600930672 /* metal_pattern2.png in Resources */ = {isa = PBXBuildFile; fileRef = 477B11CC15843BC600930672 /* metal_pattern2.png */; };
+		477B11CF15843BC600930672 /* metal_pattern2@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 477B11CD15843BC600930672 /* metal_pattern2@2x.png */; };
 		47C058F61561B36500F35DFD /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 47C058F51561B36500F35DFD /* AudioToolbox.framework */; };
 		47C058FD1561BAD800F35DFD /* tock.aif in Resources */ = {isa = PBXBuildFile; fileRef = 47C058FC1561BAD800F35DFD /* tock.aif */; };
 		47C058FF1561BB6200F35DFD /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 47C058FE1561BB6200F35DFD /* AVFoundation.framework */; };
@@ -86,6 +99,15 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		472C18C31580B28B00240D73 /* MainStoryboard-iPad.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = "MainStoryboard-iPad.storyboard"; path = "../Bluetooth LE/MainStoryboard-iPad.storyboard"; sourceTree = "<group>"; };
+		472C18C51580B54000240D73 /* Default-Landscape.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Default-Landscape.png"; sourceTree = "<group>"; };
+		472C18C61580B54000240D73 /* Default-Landscape@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Default-Landscape@2x.png"; sourceTree = "<group>"; };
+		472C18C71580B54000240D73 /* Default-Portrait.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Default-Portrait.png"; sourceTree = "<group>"; };
+		472C18C81580B54000240D73 /* Default-Portrait@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Default-Portrait@2x.png"; sourceTree = "<group>"; };
+		472C18D31580BE6700240D73 /* PageListViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PageListViewController.h; sourceTree = "<group>"; };
+		472C18D41580BE6700240D73 /* PageListViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PageListViewController.m; sourceTree = "<group>"; };
+		472C18DC1580DA7F00240D73 /* metal_pattern.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = metal_pattern.png; sourceTree = "<group>"; };
+		472C18DD1580DA7F00240D73 /* metal_pattern@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "metal_pattern@2x.png"; sourceTree = "<group>"; };
 		47309C2F155AD5C60065F74E /* readme.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = readme.md; sourceTree = "<group>"; };
 		473C9F5B154F42A700842854 /* Bluetooth LE.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Bluetooth LE.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		473C9F5F154F42A700842854 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
@@ -98,8 +120,8 @@
 		473C9F6E154F42A700842854 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
 		473C9F6F154F42A700842854 /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
 		473C9F72154F42A700842854 /* en */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = en; path = en.lproj/MainStoryboard.storyboard; sourceTree = "<group>"; };
-		473C9F74154F42A700842854 /* ViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ViewController.h; sourceTree = "<group>"; };
-		473C9F75154F42A700842854 /* ViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ViewController.m; sourceTree = "<group>"; };
+		473C9F74154F42A700842854 /* MainViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MainViewController.h; sourceTree = "<group>"; };
+		473C9F75154F42A700842854 /* MainViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = MainViewController.m; sourceTree = "<group>"; };
 		473C9F7C154F42C700842854 /* CoreBluetooth.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreBluetooth.framework; path = System/Library/Frameworks/CoreBluetooth.framework; sourceTree = SDKROOT; };
 		473C9F8D154F48AD00842854 /* CBUUID+Utils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "CBUUID+Utils.h"; sourceTree = "<group>"; };
 		473C9F8E154F48AD00842854 /* CBUUID+Utils.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "CBUUID+Utils.m"; sourceTree = "<group>"; };
@@ -156,6 +178,12 @@
 		4747358615604E34008C5B84 /* TBXML.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TBXML.m; sourceTree = "<group>"; };
 		4747358715604E34008C5B84 /* TBXML.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TBXML.h; sourceTree = "<group>"; };
 		4747358C15605017008C5B84 /* remote.xml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = remote.xml; sourceTree = "<group>"; };
+		477B11C31584395F00930672 /* cell_bg.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = cell_bg.png; sourceTree = "<group>"; };
+		477B11C41584395F00930672 /* cell_bg@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "cell_bg@2x.png"; sourceTree = "<group>"; };
+		477B11C915843A6300930672 /* PageCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PageCell.h; sourceTree = "<group>"; };
+		477B11CA15843A6300930672 /* PageCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PageCell.m; sourceTree = "<group>"; };
+		477B11CC15843BC600930672 /* metal_pattern2.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = metal_pattern2.png; sourceTree = "<group>"; };
+		477B11CD15843BC600930672 /* metal_pattern2@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "metal_pattern2@2x.png"; sourceTree = "<group>"; };
 		47C058F51561B36500F35DFD /* AudioToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioToolbox.framework; path = System/Library/Frameworks/AudioToolbox.framework; sourceTree = SDKROOT; };
 		47C058FC1561BAD800F35DFD /* tock.aif */ = {isa = PBXFileReference; lastKnownFileType = file; path = tock.aif; sourceTree = "<group>"; };
 		47C058FE1561BB6200F35DFD /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
@@ -194,6 +222,7 @@
 		473C9F50154F42A700842854 = {
 			isa = PBXGroup;
 			children = (
+				477B11C815843A3900930672 /* Views */,
 				47309C2F155AD5C60065F74E /* readme.md */,
 				473C9F65154F42A700842854 /* Bluetooth LE */,
 				473C9F7E154F459F00842854 /* Resources */,
@@ -229,14 +258,13 @@
 				4747358515604E15008C5B84 /* TBXML */,
 				473C9F6E154F42A700842854 /* AppDelegate.h */,
 				473C9F6F154F42A700842854 /* AppDelegate.m */,
-				473C9F71154F42A700842854 /* MainStoryboard.storyboard */,
-				473C9F74154F42A700842854 /* ViewController.h */,
-				473C9F75154F42A700842854 /* ViewController.m */,
-				47473507155DB0E7008C5B84 /* MBProgressHUD.h */,
-				47473508155DB0E7008C5B84 /* MBProgressHUD.m */,
+				473C9F74154F42A700842854 /* MainViewController.h */,
+				473C9F75154F42A700842854 /* MainViewController.m */,
 				473C9F66154F42A700842854 /* Supporting Files */,
 				473C9F8D154F48AD00842854 /* CBUUID+Utils.h */,
 				473C9F8E154F48AD00842854 /* CBUUID+Utils.m */,
+				472C18D31580BE6700240D73 /* PageListViewController.h */,
+				472C18D41580BE6700240D73 /* PageListViewController.m */,
 			);
 			path = "Bluetooth LE";
 			sourceTree = "<group>";
@@ -255,6 +283,8 @@
 		473C9F7E154F459F00842854 /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				473C9F71154F42A700842854 /* MainStoryboard.storyboard */,
+				472C18C31580B28B00240D73 /* MainStoryboard-iPad.storyboard */,
 				47C058FC1561BAD800F35DFD /* tock.aif */,
 				47C059461562A02700F35DFD /* coordinates.plist */,
 				4747358C15605017008C5B84 /* remote.xml */,
@@ -284,6 +314,12 @@
 		474734E1155D9138008C5B84 /* Images */ = {
 			isa = PBXGroup;
 			children = (
+				477B11CC15843BC600930672 /* metal_pattern2.png */,
+				477B11CD15843BC600930672 /* metal_pattern2@2x.png */,
+				477B11C31584395F00930672 /* cell_bg.png */,
+				477B11C41584395F00930672 /* cell_bg@2x.png */,
+				472C18DC1580DA7F00240D73 /* metal_pattern.png */,
+				472C18DD1580DA7F00240D73 /* metal_pattern@2x.png */,
 				47C0592D15629FD600F35DFD /* Large buttons */,
 				47C0592B156298CE00F35DFD /* Medium buttons */,
 				47473549155F23F5008C5B84 /* titleScrollerOverlay.png */,
@@ -296,10 +332,14 @@
 				4747353E155F1491008C5B84 /* topbtn_debug@2x.png */,
 				47473535155F0C45008C5B84 /* toolbar.png */,
 				47473536155F0C45008C5B84 /* toolbar@2x.png */,
-				47473530155F0015008C5B84 /* Default.png */,
-				47473531155F0015008C5B84 /* Default@2x.png */,
 				474734F7155D94A2008C5B84 /* background.png */,
 				474734F8155D94A2008C5B84 /* background@2x.png */,
+				47473530155F0015008C5B84 /* Default.png */,
+				47473531155F0015008C5B84 /* Default@2x.png */,
+				472C18C51580B54000240D73 /* Default-Landscape.png */,
+				472C18C61580B54000240D73 /* Default-Landscape@2x.png */,
+				472C18C71580B54000240D73 /* Default-Portrait.png */,
+				472C18C81580B54000240D73 /* Default-Portrait@2x.png */,
 			);
 			name = Images;
 			sourceTree = "<group>";
@@ -311,6 +351,18 @@
 				4747358715604E34008C5B84 /* TBXML.h */,
 			);
 			name = TBXML;
+			sourceTree = "<group>";
+		};
+		477B11C815843A3900930672 /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				47473507155DB0E7008C5B84 /* MBProgressHUD.h */,
+				47473508155DB0E7008C5B84 /* MBProgressHUD.m */,
+				477B11C915843A6300930672 /* PageCell.h */,
+				477B11CA15843A6300930672 /* PageCell.m */,
+			);
+			name = Views;
+			path = "Bluetooth LE";
 			sourceTree = "<group>";
 		};
 		47C0592B156298CE00F35DFD /* Medium buttons */ = {
@@ -478,6 +530,17 @@
 				47C0594415629FF300F35DFD /* btn_large_yellow.png in Resources */,
 				47C0594515629FF300F35DFD /* btn_large_yellow@2x.png in Resources */,
 				47C059471562A02700F35DFD /* coordinates.plist in Resources */,
+				472C18C41580B28B00240D73 /* MainStoryboard-iPad.storyboard in Resources */,
+				472C18C91580B54000240D73 /* Default-Landscape.png in Resources */,
+				472C18CA1580B54000240D73 /* Default-Landscape@2x.png in Resources */,
+				472C18CB1580B54000240D73 /* Default-Portrait.png in Resources */,
+				472C18CC1580B54000240D73 /* Default-Portrait@2x.png in Resources */,
+				472C18DE1580DA8000240D73 /* metal_pattern.png in Resources */,
+				472C18DF1580DA8000240D73 /* metal_pattern@2x.png in Resources */,
+				477B11C51584395F00930672 /* cell_bg.png in Resources */,
+				477B11C61584395F00930672 /* cell_bg@2x.png in Resources */,
+				477B11CE15843BC600930672 /* metal_pattern2.png in Resources */,
+				477B11CF15843BC600930672 /* metal_pattern2@2x.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -490,10 +553,12 @@
 			files = (
 				473C9F6C154F42A700842854 /* main.m in Sources */,
 				473C9F70154F42A700842854 /* AppDelegate.m in Sources */,
-				473C9F76154F42A700842854 /* ViewController.m in Sources */,
+				473C9F76154F42A700842854 /* MainViewController.m in Sources */,
 				473C9F8F154F48AD00842854 /* CBUUID+Utils.m in Sources */,
 				47473509155DB0E7008C5B84 /* MBProgressHUD.m in Sources */,
 				4747358815604E34008C5B84 /* TBXML.m in Sources */,
+				472C18D61580BE6700240D73 /* PageListViewController.m in Sources */,
+				477B11CB15843A6300930672 /* PageCell.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -514,6 +579,7 @@
 				473C9F72154F42A700842854 /* en */,
 			);
 			name = MainStoryboard.storyboard;
+			path = "../Bluetooth LE";
 			sourceTree = "<group>";
 		};
 /* End PBXVariantGroup section */
@@ -570,7 +636,9 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "Bluetooth LE/Bluetooth LE-Prefix.pch";
 				INFOPLIST_FILE = "Bluetooth LE/Bluetooth LE-Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 5.1;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				TARGETED_DEVICE_FAMILY = "1,2";
 				WRAPPER_EXTENSION = app;
 			};
 			name = Debug;
@@ -581,7 +649,9 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "Bluetooth LE/Bluetooth LE-Prefix.pch";
 				INFOPLIST_FILE = "Bluetooth LE/Bluetooth LE-Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 5.1;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				TARGETED_DEVICE_FAMILY = "1,2";
 				WRAPPER_EXTENSION = app;
 			};
 			name = Release;
