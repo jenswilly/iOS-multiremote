@@ -9,6 +9,7 @@
 #import <UIKit/UIKit.h>
 #import <CoreBluetooth/CoreBluetooth.h>
 #import <AVFoundation/AVFoundation.h>
+@class PageListViewController;
 
 typedef enum
 {
@@ -24,8 +25,13 @@ typedef enum
 	AVAudioPlayer *audioPlayer;
 	NSUInteger currentCommandNumber;
 	CommandMode commandMode;
+	NSMutableArray *toolbarItems;
+	NSArray *pages;						// iPad only
+	NSDictionary *pageContent;			// iPad only
 }
 
+@property (weak) PageListViewController *masterViewController;	// iPad only
+@property (readonly) NSArray *pages;	// iPad only
 @property (strong) CBCentralManager *centralManager;
 @property (strong) NSMutableArray *peripherals;
 @property (strong) NSMutableDictionary *peripheralNames;
@@ -35,13 +41,13 @@ typedef enum
 @property (weak) CBCharacteristic *GCACResponseCharacteristic;
 @property (weak, nonatomic) IBOutlet UITextView *textView;
 @property (weak, nonatomic) IBOutlet UIView *debugView;
-@property (weak, nonatomic) IBOutlet UIScrollView *mainScroller;
+@property (weak, nonatomic) IBOutlet UIScrollView *mainScroller;		// iPhone only
+@property (weak, nonatomic) IBOutlet UIScrollView *pageLabelScroller;	// iPhone only
 @property (strong, nonatomic) IBOutlet UIBarButtonItem *learnButton;
 @property (strong, nonatomic) IBOutlet UIBarButtonItem *debugButton;
 @property (strong, nonatomic) IBOutlet UIBarButtonItem *scanButton;
 @property (strong, nonatomic) IBOutlet UIBarButtonItem *flexSpace;
 @property (weak, nonatomic) IBOutlet UIToolbar *toolbar;
-@property (weak, nonatomic) IBOutlet UIScrollView *pageLabelScroller;
 
 - (IBAction)scanAction:(id)sender;
 - (IBAction)sendCommandAction:(id)sender;

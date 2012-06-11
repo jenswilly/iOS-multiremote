@@ -7,7 +7,10 @@
 //
 
 #import <UIKit/UIKit.h>
+@class MainViewController;
 
 @interface PageListViewController : UITableViewController
+
+@property (weak) MainViewController *detailViewController;
 
 @end

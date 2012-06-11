@@ -12,7 +12,7 @@
 
 - (void)awakeFromNib
 {
-	DEBUG_POSITION;
+	// Set custom cell background (we can't do this in IB)
 	self.backgroundView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"cell_bg.png"]];
 }
 

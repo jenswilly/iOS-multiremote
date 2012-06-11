@@ -7,12 +7,15 @@
 //
 
 #import "PageListViewController.h"
+#import "MainViewController.h"
+#import "AppDelegate.h"
 
 @interface PageListViewController ()
 
 @end
 
 @implementation PageListViewController
+@synthesize detailViewController;
 
 - (id)initWithStyle:(UITableViewStyle)style
 {
@@ -27,7 +30,11 @@
 {
     [super viewDidLoad];
 	
-	// Set background pattern
+	// Set (weak) reference to detail view controller
+	self.detailViewController = [APP mainViewController];
+	detailViewController.masterViewController = self;
+	
+	 // Set background pattern
 	self.tableView.backgroundColor = [UIColor colorWithPatternImage:[UIImage imageNamed:@"metal_pattern2.png"]];
 }
 
@@ -54,7 +61,7 @@
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
     // Return the number of rows in the section.
-    return 1;
+    return [detailViewController.pages count];
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
@@ -63,7 +70,13 @@
     UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier];
 
     // Configure the cell...
-    cell.textLabel.text = @"Device";
+    cell.textLabel.text = [detailViewController.pages objectAtIndex:indexPath.row];
+	
+	if( indexPath.row == 1 )
+		cell.imageView.image = [UIImage imageNamed:@"orb_green.png"];
+	else 
+		cell.imageView.image = [UIImage imageNamed:@"orb_gray.png"];
+	
     return cell;
 }
 
@@ -71,13 +84,7 @@
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    // Navigation logic may go here. Create and push another view controller.
-    /*
-     <#DetailViewController#> *detailViewController = [[<#DetailViewController#> alloc] initWithNibName:@"<#Nib name#>" bundle:nil];
-     // ...
-     // Pass the selected object to the new view controller.
-     [self.navigationController pushViewController:detailViewController animated:YES];
-     */
+	[self.detailViewController toggleDebugAction:nil];
 }
 
 @end

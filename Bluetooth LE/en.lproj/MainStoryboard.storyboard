@@ -130,6 +130,36 @@
         <image name="background.png" width="320" height="416"/>
         <image name="titleScrollerOverlay.png" width="320" height="40"/>
     </resources>
+    <classes>
+        <class className="MainViewController" superclassName="UIViewController">
+            <source key="sourceIdentifier" type="project" relativePath="./Classes/MainViewController.h"/>
+            <relationships>
+                <relationship kind="action" name="cancelRepeatCommand:"/>
+                <relationship kind="action" name="clearAction:"/>
+                <relationship kind="action" name="debug1Action:"/>
+                <relationship kind="action" name="disconnectAction:"/>
+                <relationship kind="action" name="forgetPreferredAction:"/>
+                <relationship kind="action" name="learn:"/>
+                <relationship kind="action" name="readAction:"/>
+                <relationship kind="action" name="repeatCommand:" candidateClass="UIButton"/>
+                <relationship kind="action" name="scanAction:"/>
+                <relationship kind="action" name="sendCommandAction:"/>
+                <relationship kind="action" name="sendLearnAction:"/>
+                <relationship kind="action" name="sendTAction:"/>
+                <relationship kind="action" name="sendYAction:"/>
+                <relationship kind="action" name="toggleDebugAction:"/>
+                <relationship kind="outlet" name="debugButton" candidateClass="UIBarButtonItem"/>
+                <relationship kind="outlet" name="debugView" candidateClass="UIView"/>
+                <relationship kind="outlet" name="flexSpace" candidateClass="UIBarButtonItem"/>
+                <relationship kind="outlet" name="learnButton" candidateClass="UIBarButtonItem"/>
+                <relationship kind="outlet" name="mainScroller" candidateClass="UIScrollView"/>
+                <relationship kind="outlet" name="pageLabelScroller" candidateClass="UIScrollView"/>
+                <relationship kind="outlet" name="scanButton" candidateClass="UIBarButtonItem"/>
+                <relationship kind="outlet" name="textView" candidateClass="UITextView"/>
+                <relationship kind="outlet" name="toolbar" candidateClass="UIToolbar"/>
+            </relationships>
+        </class>
+    </classes>
     <simulatedMetricsContainer key="defaultSimulatedMetrics">
         <simulatedStatusBarMetrics key="statusBar" statusBarStyle="blackTranslucent"/>
         <simulatedOrientationMetrics key="orientation"/>

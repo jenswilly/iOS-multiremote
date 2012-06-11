@@ -8,6 +8,7 @@
 
 #import <UIKit/UIKit.h>
 #import <CoreBluetooth/CoreBluetooth.h>
+@class MainViewController;
 
 @interface AppDelegate : UIResponder <UIApplicationDelegate>
 
@@ -17,5 +18,7 @@
 - (void)savePreferredDevice;
 - (void)loadPreferredDevice;
 - (void)setAppearance;
+- (MainViewController*)mainViewController;
+
 
 @end

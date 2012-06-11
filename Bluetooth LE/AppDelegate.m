@@ -9,6 +9,7 @@
 #import "AppDelegate.h"
 #import "CBUUID+Utils.h"
 #import "MainViewController.h"
+#import "PageListViewController.h"
 
 static NSString* const kUserDefaults_PreferredDeviceKey = @"kUserDefaults_PreferredDeviceKey";
 
@@ -20,7 +21,9 @@ static NSString* const kUserDefaults_PreferredDeviceKey = @"kUserDefaults_Prefer
 {
 	// Set split view controller's delegate (can't do this in IB for some reason)
 	if( UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad )
+	{
 		[(UISplitViewController*)_window.rootViewController setDelegate:[self mainViewController]];
+	}
 	
 	[self.window makeKeyAndVisible];
 	[self showSplash];
@@ -172,5 +175,11 @@ static NSString* const kUserDefaults_PreferredDeviceKey = @"kUserDefaults_Prefer
 - (void)setAppearance
 {
 	[[UIToolbar appearance] setBackgroundImage:[UIImage imageNamed:@"toolbar.png"] forToolbarPosition:UIToolbarPositionAny barMetrics:UIBarMetricsDefault];
+	[[UINavigationBar appearance] setBackgroundImage:[UIImage imageNamed:@"toolbar.png"] forBarMetrics:UIBarMetricsDefault];
+	[[UINavigationBar appearance] setTitleTextAttributes:[NSDictionary dictionaryWithObjectsAndKeys:
+														  [UIColor whiteColor], UITextAttributeTextColor,
+														  [UIColor blackColor], UITextAttributeTextShadowColor,
+														  [NSValue valueWithCGSize:CGSizeMake(0, 1)], UITextAttributeTextShadowOffset,
+														  nil]];
 }
 @end

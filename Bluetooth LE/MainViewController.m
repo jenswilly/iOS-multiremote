@@ -10,6 +10,7 @@
 #import "CBUUID+Utils.h"
 #import "MBProgressHUD.h"
 #import "TBXML.h"
+#import "PageListViewController.h"
 
 #define UUID_GCAC_SERVICE @"b8b96269-562a-408f-8155-0b45f21c7774"
 #define UUID_DEVICE_INFORMATION @"180a"
@@ -25,16 +26,16 @@ static const CGFloat yCoords[] = {7, 101, 195, 289};
 @interface MainViewController ()
 - (void)print:(NSString*)text;
 - (void)scanTimeout:(NSTimer*)timer;
-- (void)toggleDebugMode;
-- (void)toggleLearningMode;
 - (void)populateTitleLabelScroller:(NSArray*)pageTitles;
 - (void)parseXMLFile:(NSString*)xmlFileName;
 - (void)sendCommand:(NSUInteger)commandNumber;
+- (void)iPhone_readPages:(TBXMLElement*)rootElement;
+- (void)iPad_readPages:(TBXMLElement*)rootElement;
 
 @end
 
 @implementation MainViewController
-@synthesize centralManager, peripherals, connectedPeripheral, GCACService, GCACCommandCharacteristic, GCACResponseCharacteristic, peripheralNames;
+@synthesize centralManager, peripherals, connectedPeripheral, GCACService, GCACCommandCharacteristic, GCACResponseCharacteristic, peripheralNames, pages, masterViewController;
 @synthesize learnButton;
 @synthesize debugButton;
 @synthesize scanButton;
@@ -68,14 +69,15 @@ static const CGFloat yCoords[] = {7, 101, 195, 289};
 	NSAssert( error == nil, @"Error loading sound: %@", [error localizedDescription] );
     [audioPlayer prepareToPlay];
 	
-	// Set toolbar items
-	[toolbar setItems:[NSArray arrayWithObjects:debugButton, flexSpace, nil] animated:YES];
-	 
 	// Appearance
 	[debugButton setBackgroundImage:[UIImage imageNamed:@"topbtn_debug.png"] forState:UIControlStateNormal barMetrics:UIBarMetricsDefault];
 	[scanButton setBackgroundImage:[UIImage imageNamed:@"topbtn_scan.png"] forState:UIControlStateNormal barMetrics:UIBarMetricsDefault];
 	[learnButton setBackgroundImage:[UIImage imageNamed:@"topbtn_learn.png"] forState:UIControlStateNormal barMetrics:UIBarMetricsDefault];
 	
+	// Set toolbar items
+	toolbarItems = [NSMutableArray arrayWithObjects:flexSpace, scanButton, debugButton, nil];
+	[toolbar setItems:toolbarItems animated:YES];
+	 
 	// Load xml
 	[self parseXMLFile:@"remote.xml"];
 	
@@ -160,57 +162,6 @@ static const CGFloat yCoords[] = {7, 101, 195, 289};
 	pageLabelScroller.contentOffset = CGPointMake( -160, 0 );
 }
 
-- (void)toggleDebugMode
-{
-	// Is the debugging view already visible?
-	if( debugView.frame.origin.y < 460 )
-	{
-		// Yes: hide it
-		CGRect frame = debugView.frame;
-		frame.origin.y = 460;
-		
-		[UIView animateWithDuration:0.3 animations:^{
-//			debugButton.highlighted = NO;
-			debugView.frame = frame;
-		}];
-	}
-	else
-	{
-		// No: show it
-		CGRect frame = debugView.frame;
-		frame.origin.y = 460 - frame.size.height;
-		
-		[UIView animateWithDuration:0.3 animations:^{
-//			debugButton.highlighted = YES;
-			debugView.frame = frame;
-		}];
-	}
-}
-
-- (void)toggleLearningMode
-{
-	// Toggle recording
-	learning = !learning;
-	
-	// Change font color on all buttons
-	[mainScroller.subviews enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
-		if( [obj isKindOfClass:[UIButton class]] )
-		{
-			UIButton *button = (UIButton*)obj;	// Typecast
-			if( learning )
-			{
-				[button setTitleColor:[UIColor redColor] forState:UIControlStateNormal];
-				[button setTitleShadowColor:[UIColor whiteColor] forState:UIControlStateNormal];
-			}
-			else 
-			{
-				[button setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
-				[button setTitleShadowColor:[UIColor whiteColor] forState:UIControlStateNormal];
-			}
-		}
-	}];
-}
-
 - (void)print:(NSString *)text
 {
 	DEBUG_LOG( @"--> %@", text );
@@ -253,8 +204,14 @@ static const CGFloat yCoords[] = {7, 101, 195, 289};
 		UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"No devices found" message:@"Make sure the device is switched on and in range." delegate:nil cancelButtonTitle:nil otherButtonTitles:@"OK", nil];
 		[alert show];
 		
-		// Set toolbar items
-		[toolbar setItems:[NSArray arrayWithObjects:debugButton, flexSpace, scanButton, nil] animated:YES];
+		// Set last item of the toolbar to the scan button (enabled)
+		scanButton.enabled = YES;
+		if( [toolbarItems containsObject:learnButton] )
+		{
+			[toolbarItems insertObject:scanButton atIndex:[toolbarItems indexOfObject:learnButton]];
+			[toolbarItems removeObject:learnButton];
+		}
+		[toolbar setItems:toolbarItems animated:YES];
 		
 	}
 }
@@ -525,9 +482,18 @@ static const CGFloat yCoords[] = {7, 101, 195, 289};
 
 - (void)splitViewController:(UISplitViewController *)svc willHideViewController:(UIViewController *)aViewController withBarButtonItem:(UIBarButtonItem *)barButtonItem forPopoverController:(UIPopoverController *)pc
 {
-	barButtonItem.title = @"Pages";
-	UIBarButtonItem *barBtnItem = [[UIBarButtonItem alloc] initWithTitle:@"Test" style:UIBarButtonItemStyleBordered target:self action:@selector(scanAction:)];
-	[toolbar setItems:[NSArray arrayWithObjects:barButtonItem, barBtnItem, nil] animated:YES];
+	[barButtonItem setBackgroundImage:[UIImage imageNamed:@"topbtn_debug.png"] forState:UIControlStateNormal barMetrics:UIBarMetricsDefault];
+
+	// Add the button to toolbar items array
+	[toolbarItems insertObject:barButtonItem atIndex:0];
+	[toolbar setItems:toolbarItems animated:YES];
+}
+
+- (void)splitViewController:(UISplitViewController *)svc willShowViewController:(UIViewController *)aViewController invalidatingBarButtonItem:(UIBarButtonItem *)barButtonItem
+{
+	// Remove the bar button from toolbar items
+	[toolbarItems removeObject:barButtonItem];
+	[toolbar setItems:toolbarItems animated:YES];
 }
 
 #pragma mark - Public methods
@@ -547,7 +513,14 @@ static const CGFloat yCoords[] = {7, 101, 195, 289};
 	[centralManager scanForPeripheralsWithServices:[NSArray arrayWithObject:[CBUUID UUIDWithString:UUID_GCAC_SERVICE]] options:0];
 	
 	// Set toolbar items
-	[toolbar setItems:[NSArray arrayWithObjects:debugButton, flexSpace, nil] animated:YES];
+	if( [toolbarItems containsObject:learnButton] )
+	{
+		[toolbarItems insertObject:scanButton atIndex:[toolbarItems indexOfObject:learnButton]];
+		[toolbarItems removeObject:learnButton];
+	}
+
+	scanButton.enabled = NO;
+	[toolbar setItems:toolbarItems animated:YES];
 }
 
 - (IBAction)repeatCommand:(UIButton*)sender
@@ -615,14 +588,61 @@ static const CGFloat yCoords[] = {7, 101, 195, 289};
 
 - (IBAction)learn:(id)sender
 {
-	// Schedule this on the main thread so we can change the button's state
-	[self performSelectorOnMainThread:@selector(toggleLearningMode) withObject:nil waitUntilDone:NO];
+	// Toggle recording
+	learning = !learning;
+	
+	// Change font color on all buttons
+	[mainScroller.subviews enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+		if( [obj isKindOfClass:[UIButton class]] )
+		{
+			UIButton *button = (UIButton*)obj;	// Typecast
+			if( learning )
+			{
+				[button setTitleColor:[UIColor redColor] forState:UIControlStateNormal];
+				[button setTitleShadowColor:[UIColor whiteColor] forState:UIControlStateNormal];
+			}
+			else 
+			{
+				[button setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
+				[button setTitleShadowColor:[UIColor whiteColor] forState:UIControlStateNormal];
+			}
+		}
+	}];
 }
 
 - (IBAction)toggleDebugAction:(id)sender
 {
-	// Schedule this on the main thread so we can change the button's state
-	[self performSelectorOnMainThread:@selector(toggleDebugMode) withObject:nil waitUntilDone:NO];
+	// Is the debugging view already visible?
+	if( debugView.frame.origin.y < self.view.bounds.size.height )
+	{
+		// Yes: hide it
+		CGRect frame = debugView.frame;
+		frame.origin.y = self.view.bounds.size.height;
+		
+		[UIView animateWithDuration:0.3 animations:^{
+			debugView.frame = frame;
+		}];
+	}
+	else
+	{
+		// No: show it
+		CGRect frame = debugView.frame;
+		frame.origin.y = self.view.bounds.size.height - frame.size.height;
+		
+		// Weirdness happens here…
+		// The first time we show the debug view, the textView is *invisible*.
+		// But as soon as the user scrolls in the view, it becomes visible.
+		// See http://stackoverflow.com/questions/7738666/uitextview-doesnt-show-until-it-is-scrolled
+		// Therefore, we clear the text and set it again. Dangit, that should not be necessary!
+		NSString *tmpText = textView.text;
+		textView.text = @"";
+		textView.text = tmpText;
+		[textView scrollRangeToVisible:NSMakeRange( [textView.text length]-1, 1 )];
+
+		[UIView animateWithDuration:0.3 animations:^{
+			debugView.frame = frame;
+		}];
+	}
 }
 
 - (IBAction)debug1Action:(id)sender
@@ -695,10 +715,6 @@ static const CGFloat yCoords[] = {7, 101, 195, 289};
 
 - (void)parseXMLFile:(NSString*)xmlFileName
 {
-	// Read layout spec file
-	NSString *layoutPlistFilePath = [[NSBundle mainBundle] pathForResource:@"coordinates" ofType:@"plist"];
-	NSDictionary *layoutInfo = [NSDictionary dictionaryWithContentsOfFile:layoutPlistFilePath];
-	NSAssert( layoutInfo != nil, @"Error opening layout coordinates file!" );
 	
 	/// TEMP: get from iTunes documents instead
 	NSError *error = nil;
@@ -706,7 +722,44 @@ static const CGFloat yCoords[] = {7, 101, 195, 289};
 	NSAssert( error == nil, @"Error opening xml file: %@", [error localizedDescription] );
 	
 	// Iterate pages
-	TBXMLElement *page = [TBXML childElementNamed:@"page" parentElement:xml.rootXMLElement];
+	// iPhone or iPad?
+	if( UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad )
+		// iPad: parse and create 
+		[self iPad_readPages:xml.rootXMLElement];
+	else
+		// iPhone: parse and add to mainScroller and titleScroller
+		[self iPhone_readPages:xml.rootXMLElement];
+}
+
+- (void)iPad_readPages:(TBXMLElement*)rootElement
+{
+	NSMutableArray *tmpArray = [NSMutableArray array];
+	
+	// Iterate pages
+	TBXMLElement *page = [TBXML childElementNamed:@"page" parentElement:rootElement];
+	while( page )
+	{
+		NSString *pageName = [TBXML valueOfAttributeNamed:@"name" forElement:page];
+		[tmpArray addObject:pageName];
+		DEBUG_LOG( @"Found page '%@'", pageName );
+		
+		// Next page
+		page = [TBXML nextSiblingNamed:@"page" searchFromElement:page];
+	}
+	
+	// Set array and reload list
+	pages = [[NSArray alloc] initWithArray:tmpArray];
+	[masterViewController.tableView reloadData];
+}
+
+- (void)iPhone_readPages:(TBXMLElement*)rootElement
+{
+	// Get iPhone layout info
+	NSString *layoutPlistFilePath = [[NSBundle mainBundle] pathForResource:@"coordinates" ofType:@"plist"];
+	NSDictionary *layoutInfo = [NSDictionary dictionaryWithContentsOfFile:layoutPlistFilePath];
+	NSAssert( layoutInfo != nil, @"Error opening layout coordinates file!" );
+	
+	TBXMLElement *page = [TBXML childElementNamed:@"page" parentElement:rootElement];
 	NSMutableArray *pageNames = [NSMutableArray array];
 	CGFloat pageOffset = 0;
 	while( page )
@@ -814,9 +867,10 @@ static const CGFloat yCoords[] = {7, 101, 195, 289};
 	
 	// Set content size
 	mainScroller.contentSize = CGSizeMake( pageOffset, mainScroller.bounds.size.height );
-
+	
 	// Set page titles
 	[self populateTitleLabelScroller:pageNames];
 }
+
 
 @end
