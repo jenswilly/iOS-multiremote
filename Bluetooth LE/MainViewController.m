@@ -11,6 +11,7 @@
 #import "MBProgressHUD.h"
 #import "TBXML.h"
 #import "PageListViewController.h"
+#import "ButtonModel.h"
 
 #define UUID_GCAC_SERVICE @"b8b96269-562a-408f-8155-0b45f21c7774"
 #define UUID_DEVICE_INFORMATION @"180a"
@@ -31,11 +32,13 @@ static const CGFloat yCoords[] = {7, 101, 195, 289};
 - (void)sendCommand:(NSUInteger)commandNumber;
 - (void)iPhone_readPages:(TBXMLElement*)rootElement;
 - (void)iPad_readPages:(TBXMLElement*)rootElement;
+- (void)disableButtons;
+- (void)enableButtons;
 
 @end
 
 @implementation MainViewController
-@synthesize centralManager, peripherals, connectedPeripheral, GCACService, GCACCommandCharacteristic, GCACResponseCharacteristic, peripheralNames, pages, masterViewController;
+@synthesize centralManager, peripherals, connectedPeripheral, GCACService, GCACCommandCharacteristic, GCACResponseCharacteristic, peripheralNames, pages, pageContent, masterViewController, currentButtonsView = _currentButtonsView, currentPageName;
 @synthesize learnButton;
 @synthesize debugButton;
 @synthesize scanButton;
@@ -82,10 +85,7 @@ static const CGFloat yCoords[] = {7, 101, 195, 289};
 	[self parseXMLFile:@"remote.xml"];
 	
 	// Disable all buttons requiring a connection
-	[mainScroller.subviews enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
-		if( [obj isKindOfClass:[UIButton class]] )
-			[(UIButton*)obj setEnabled:NO];
-	}];
+	[self disableButtons];
 	
 	commandMode = CommandModeIdle;
 }
@@ -212,7 +212,6 @@ static const CGFloat yCoords[] = {7, 101, 195, 289};
 			[toolbarItems removeObject:learnButton];
 		}
 		[toolbar setItems:toolbarItems animated:YES];
-		
 	}
 }
 
@@ -318,9 +317,6 @@ static const CGFloat yCoords[] = {7, 101, 195, 289};
 	
 	[self print:[NSString stringWithFormat:@"Connected to peripheral: %@", [CBUUID stringFromCFUUIDRef:peripheral.UUID]]];
 	
-	// Hide scan button
-//	scanButton.hidden = YES;
-	
 	// Set property and remember as preferred device
 	peripheral.delegate = self;
 	self.connectedPeripheral = peripheral; 
@@ -344,10 +340,7 @@ static const CGFloat yCoords[] = {7, 101, 195, 289};
 	self.connectedPeripheral = nil;
 	
 	// Disable all buttons requiring a connection
-	[mainScroller.subviews enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
-		if( [obj isKindOfClass:[UIButton class]] )
-			[(UIButton*)obj setEnabled:NO];
-	}];
+	[self disableButtons];
 	[toolbar setItems:[NSArray arrayWithObjects:debugButton, flexSpace, scanButton, nil] animated:YES];
 }
 
@@ -406,10 +399,7 @@ static const CGFloat yCoords[] = {7, 101, 195, 289};
 				self.GCACCommandCharacteristic = characteristic;
 				
 				// We have the command characteristic: enable buttons
-				[mainScroller.subviews enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
-					if( [obj isKindOfClass:[UIButton class]] )
-						[(UIButton*)obj setEnabled:YES];
-				}];
+				[self enableButtons];
 				
 				// Set toolbar items
 				[toolbar setItems:[NSArray arrayWithObjects:debugButton, flexSpace, learnButton, nil] animated:YES];
@@ -496,7 +486,303 @@ static const CGFloat yCoords[] = {7, 101, 195, 289};
 	[toolbar setItems:toolbarItems animated:YES];
 }
 
-#pragma mark - Public methods
+#pragma mark - ButtonModelDelegate methods
+
+- (void)repeatCommand:(UIButton*)sender
+{
+	currentCommandNumber = sender.tag;
+	commandMode = CommandModeRepeat;
+	
+	// Play sound
+	[audioPlayer play];
+	
+	// Send command
+	[self sendCommand:currentCommandNumber];
+}
+
+/* Stops the repeatable command from transmitting.
+ */
+- (void)cancelRepeatCommand:(id)sender
+{
+	// Stop repeating
+	commandMode = CommandModeIdle;
+}
+
+- (void)sendCommandAction:(UIButton*)sender
+{
+	// Play sound
+	[audioPlayer play];
+	
+	[self sendCommand:sender.tag];
+}
+
+#pragma mark - XML parser methods
+
+- (void)parseXMLFile:(NSString*)xmlFileName
+{
+	
+	/// TEMP: get from iTunes documents instead
+	NSError *error = nil;
+	TBXML *xml = [TBXML newTBXMLWithXMLFile:xmlFileName error:&error];
+	NSAssert( error == nil, @"Error opening xml file: %@", [error localizedDescription] );
+	
+	// Iterate pages
+	// iPhone or iPad?
+	if( UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad )
+		// iPad: parse and create 
+		[self iPad_readPages:xml.rootXMLElement];
+	else
+		// iPhone: parse and add to mainScroller and titleScroller
+		[self iPhone_readPages:xml.rootXMLElement];
+}
+
+- (void)iPad_readPages:(TBXMLElement*)rootElement
+{
+	// Get layout info
+	NSString *layoutPlistFilePath = [[NSBundle mainBundle] pathForResource:@"coordinates-iPad" ofType:@"plist"];
+	NSDictionary *layoutInfo = [NSDictionary dictionaryWithContentsOfFile:layoutPlistFilePath];
+	NSAssert( layoutInfo != nil, @"Error opening layout coordinates file!" );
+	
+	// Temporary array and dictionary for holding page names and buttons
+	NSMutableArray *tmpArray = [[NSMutableArray alloc] init];
+	NSMutableDictionary *tmpDictionary = [[NSMutableDictionary alloc] init];
+	
+	// Iterate pages
+	TBXMLElement *page = [TBXML childElementNamed:@"page" parentElement:rootElement];
+	while( page )
+	{
+		int x=0, y=0;	// Coordinates
+		
+		// Add page name to array
+		NSString *pageName = [TBXML valueOfAttributeNamed:@"name" forElement:page];
+		[tmpArray addObject:pageName];
+		DEBUG_LOG( @"Found page '%@'", pageName );
+		
+		// Which layout?
+		NSString *layout = [TBXML valueOfAttributeNamed:@"layout" forElement:page];
+		NSDictionary *pageLayoutInfo = [layoutInfo objectForKey:layout];
+		NSAssert1( pageLayoutInfo, @"Unknown page layout: %@", layout );
+		
+		// Get coords from plist dictionary
+		int columns = [[pageLayoutInfo objectForKey:@"columns"] intValue];
+		int rows = [[pageLayoutInfo objectForKey:@"rows"] intValue];
+		NSString *filenameFormat = [pageLayoutInfo objectForKey:@"filenameFormat"];
+		CGFloat initialX = [[pageLayoutInfo objectForKey:@"initialX"] floatValue];
+		CGFloat initialY = [[pageLayoutInfo objectForKey:@"initialY"] floatValue];
+		CGFloat stepX = [[pageLayoutInfo objectForKey:@"stepX"] floatValue];
+		CGFloat stepY = [[pageLayoutInfo objectForKey:@"stepY"] floatValue];
+		
+		// Create view for this page
+		UIView *pageView = [[UIView alloc] initWithFrame:CGRectMake( 0, CGRectGetMaxY( toolbar.frame ), self.view.bounds.size.width, self.view.bounds.size.height - CGRectGetMaxY( toolbar.frame ))];
+		pageView.backgroundColor = [UIColor clearColor];
+		
+		// Iterate rows
+		CGFloat xPos;
+		CGFloat yPos = initialY;	// Initial y position
+		TBXMLElement *rowElement = [TBXML childElementNamed:@"row" parentElement:page];
+		while( rowElement )
+		{
+			// Reset x position
+			xPos = initialX;
+			
+			// Iterate buttons
+			TBXMLElement *buttonElement = [TBXML childElementNamed:@"button" parentElement:rowElement];
+			while( buttonElement )
+			{
+				// Instantiate button from XML
+				ButtonModel *buttonModel = [ButtonModel buttonModelFromXMLNode:buttonElement];
+				
+				// Create and configure button
+				UIButton *btn = [buttonModel buttonForDelegate:self filenameFormat:filenameFormat];
+				if( btn )
+				{
+					CGRect frame = btn.frame;
+					frame.origin = CGPointMake( xPos, yPos );
+					btn.frame = frame;
+					
+					// Add to view
+					[pageView addSubview:btn];
+				}
+				
+				// Next button
+				xPos += stepX;
+				NSAssert( x < columns, @"Too many buttons in row: %s", rowElement->text );
+				x++;
+				buttonElement = [TBXML nextSiblingNamed:@"button" searchFromElement:buttonElement];
+			}
+			
+			// Next row
+			yPos += stepY;
+			x = 0;
+			NSAssert( y < rows, @"Too many rows in page: %s", page->text );
+			y++;
+			rowElement = [TBXML nextSiblingNamed:@"row" searchFromElement:rowElement];
+		}
+		
+		// Store view in dictionary with page name as key
+		[tmpDictionary setObject:pageView forKey:pageName];
+		
+		// Next page
+		page = [TBXML nextSiblingNamed:@"page" searchFromElement:page];
+	}
+	
+	// Set array and dictionary
+	pages = [[NSArray alloc] initWithArray:tmpArray];
+	pageContent = [[NSDictionary alloc] initWithDictionary:tmpDictionary];
+	
+	/// TEMP: select first page
+	self.currentButtonsView = [pageContent objectForKey:[pages objectAtIndex:0]];
+	currentPageName = [pages objectAtIndex:0];
+
+	// Reload pages list
+	[masterViewController.tableView reloadData];
+}
+
+- (void)iPhone_readPages:(TBXMLElement*)rootElement
+{
+	// Get iPhone layout info
+	NSString *layoutPlistFilePath = [[NSBundle mainBundle] pathForResource:@"coordinates" ofType:@"plist"];
+	NSDictionary *layoutInfo = [NSDictionary dictionaryWithContentsOfFile:layoutPlistFilePath];
+	NSAssert( layoutInfo != nil, @"Error opening layout coordinates file!" );
+	
+	TBXMLElement *page = [TBXML childElementNamed:@"page" parentElement:rootElement];
+	NSMutableArray *pageNames = [NSMutableArray array];
+	CGFloat pageOffset = 0;
+	while( page )
+	{
+		int x=0, y=0;	// Coordinates
+		NSString *pageName = [TBXML valueOfAttributeNamed:@"name" forElement:page];
+		[pageNames addObject:pageName];
+		DEBUG_LOG( @"Found page '%@'", pageName );
+		
+		// Which layout?
+		NSString *layout = [TBXML valueOfAttributeNamed:@"layout" forElement:page];
+		NSDictionary *pageLayoutInfo = [layoutInfo objectForKey:layout];
+		NSAssert1( pageLayoutInfo, @"Unknown page layout: %@", layout );
+		
+		// Get coords from plist dictionary
+		int columns = [[pageLayoutInfo objectForKey:@"columns"] intValue];
+		int rows = [[pageLayoutInfo objectForKey:@"rows"] intValue];
+		NSString *filenameFormat = [pageLayoutInfo objectForKey:@"filenameFormat"];
+		CGFloat initialX = [[pageLayoutInfo objectForKey:@"initialX"] floatValue];
+		CGFloat initialY = [[pageLayoutInfo objectForKey:@"initialY"] floatValue];
+		CGFloat stepX = [[pageLayoutInfo objectForKey:@"stepX"] floatValue];
+		CGFloat stepY = [[pageLayoutInfo objectForKey:@"stepY"] floatValue];
+		
+		// Iterate rows
+		CGFloat xPos;
+		CGFloat yPos = initialY;	// Initial y position
+		TBXMLElement *rowElement = [TBXML childElementNamed:@"row" parentElement:page];
+		while( rowElement )
+		{
+			// Reset x position
+			xPos = initialX;
+			
+			// Iterate buttons
+			TBXMLElement *buttonElement = [TBXML childElementNamed:@"button" parentElement:rowElement];
+			while( buttonElement )
+			{
+				// Instantiate button from XML
+				ButtonModel *buttonModel = [ButtonModel buttonModelFromXMLNode:buttonElement];
+				
+				// Create and configure button
+				UIButton *btn = [buttonModel buttonForDelegate:self filenameFormat:filenameFormat];
+				CGRect frame = btn.frame;
+				frame.origin = CGPointMake( xPos + pageOffset, yPos );
+				btn.frame = frame;
+				
+				// Add it
+				[mainScroller addSubview:btn];
+				
+				// Next button
+				xPos += stepX;
+				NSAssert( x < columns, @"Too many buttons in row: %s", rowElement->text );
+				x++;
+				buttonElement = [TBXML nextSiblingNamed:@"button" searchFromElement:buttonElement];
+			}
+			
+			// Next row
+			yPos += stepY;
+			x = 0;
+			NSAssert( y < rows, @"Too many rows in page: %s", page->text );
+			y++;
+			rowElement = [TBXML nextSiblingNamed:@"row" searchFromElement:rowElement];
+		}
+		
+		// Next page
+		pageOffset += mainScroller.bounds.size.width;
+		page = [TBXML nextSiblingNamed:@"page" searchFromElement:page];
+	}
+	
+	// Set content size
+	mainScroller.contentSize = CGSizeMake( pageOffset, mainScroller.bounds.size.height );
+	
+	// Set page titles
+	[self populateTitleLabelScroller:pageNames];
+}
+
+#pragma mark - Other methods
+
+- (void)disableButtons
+{
+	// iPhone or iPad?
+	if( UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad )
+	{
+		// iPad: disable buttons in all views
+		for( UIView *view in [pageContent allValues] )
+		{
+			for( UIView *subview in view.subviews )
+				if( [subview isKindOfClass:[UIButton class]] )
+					[(UIButton*)subview setEnabled:NO];
+		}
+	}
+	else
+	{
+		// iPhone: enumerate subviews in mainscroller
+		for( UIView *subview in mainScroller.subviews )
+			if( [subview isKindOfClass:[UIButton class]] )
+				[(UIButton*)subview setEnabled:NO];
+	}
+}
+
+- (void)enableButtons
+{
+	// iPhone or iPad?
+	if( UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad )
+	{
+		// iPad: enable buttons in all views
+		for( UIView *view in [pageContent allValues] )
+		{
+			for( UIView *subview in view.subviews )
+				if( [subview isKindOfClass:[UIButton class]] )
+					[(UIButton*)subview setEnabled:YES];
+		}
+	}
+	else
+	{
+		// iPhone: enumerate subviews of mainscroller and enable all buttons
+		for( UIView *subview in mainScroller.subviews )
+			if( [subview isKindOfClass:[UIButton class]] )
+				[(UIButton*)subview setEnabled:YES];
+	}
+}
+
+- (void)setCurrentButtonsView:(UIView*)currentButtonsView
+{
+	// Remove old buttons view
+	/// TEMP: fancy animation here!
+	[_currentButtonsView removeFromSuperview];
+	
+	// Update ivar
+	_currentButtonsView = currentButtonsView;
+	
+	// Add and fade in new buttons view
+	_currentButtonsView.alpha = 0;
+	[self.view insertSubview:_currentButtonsView belowSubview:debugView];
+	[UIView animateWithDuration:0.3f animations:^{
+		_currentButtonsView.alpha = 1;
+	}];
+}
 
 - (IBAction)scanAction:(id)sender
 {
@@ -521,34 +807,6 @@ static const CGFloat yCoords[] = {7, 101, 195, 289};
 
 	scanButton.enabled = NO;
 	[toolbar setItems:toolbarItems animated:YES];
-}
-
-- (IBAction)repeatCommand:(UIButton*)sender
-{
-	currentCommandNumber = sender.tag;
-	commandMode = CommandModeRepeat;
-
-	// Play sound
-	[audioPlayer play];
-	
-	// Send command
-	[self sendCommand:currentCommandNumber];
-}
-
-/* Stops the repeatable command from transmitting.
- */
-- (IBAction)cancelRepeatCommand:(id)sender
-{
-	// Stop repeating
-	commandMode = CommandModeIdle;
-}
-
-- (IBAction)sendCommandAction:(UIButton*)sender
-{
-	// Play sound
-	[audioPlayer play];
-	
-	[self sendCommand:sender.tag];
 }
 
 - (IBAction)disconnectAction:(id)sender
@@ -592,22 +850,52 @@ static const CGFloat yCoords[] = {7, 101, 195, 289};
 	learning = !learning;
 	
 	// Change font color on all buttons
-	[mainScroller.subviews enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
-		if( [obj isKindOfClass:[UIButton class]] )
+	// iPhone or iPad?
+	if( UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad )
+	{
+		// iPad: all pages
+		for( UIView *view in [pageContent allValues] )
 		{
-			UIButton *button = (UIButton*)obj;	// Typecast
-			if( learning )
+			// Individual buttons
+			for( UIView *subview in view.subviews )
 			{
-				[button setTitleColor:[UIColor redColor] forState:UIControlStateNormal];
-				[button setTitleShadowColor:[UIColor whiteColor] forState:UIControlStateNormal];
-			}
-			else 
-			{
-				[button setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
-				[button setTitleShadowColor:[UIColor whiteColor] forState:UIControlStateNormal];
+				if( [subview isKindOfClass:[UIButton class]] )
+				{
+					UIButton *button = (UIButton*)subview;	// Typecast
+					if( learning )
+					{
+						[button setTitleColor:[UIColor redColor] forState:UIControlStateNormal];
+						[button setTitleShadowColor:[UIColor whiteColor] forState:UIControlStateNormal];
+					}
+					else 
+					{
+						[button setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
+						[button setTitleShadowColor:[UIColor whiteColor] forState:UIControlStateNormal];
+					}
+				}
 			}
 		}
-	}];
+	}
+	else
+	{
+		// iPhone: use mainScroller
+		[mainScroller.subviews enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+			if( [obj isKindOfClass:[UIButton class]] )
+			{
+				UIButton *button = (UIButton*)obj;	// Typecast
+				if( learning )
+				{
+					[button setTitleColor:[UIColor redColor] forState:UIControlStateNormal];
+					[button setTitleShadowColor:[UIColor whiteColor] forState:UIControlStateNormal];
+				}
+				else 
+				{
+					[button setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
+					[button setTitleShadowColor:[UIColor whiteColor] forState:UIControlStateNormal];
+				}
+			}
+		}];
+	}
 }
 
 - (IBAction)toggleDebugAction:(id)sender
@@ -630,10 +918,11 @@ static const CGFloat yCoords[] = {7, 101, 195, 289};
 		frame.origin.y = self.view.bounds.size.height - frame.size.height;
 		
 		// Weirdness happens here…
-		// The first time we show the debug view, the textView is *invisible*.
-		// But as soon as the user scrolls in the view, it becomes visible.
+		// When we show the debug view, the textView is not updates to show the text.
+		// But as soon as the user scrolls the view, it becomes visible.
 		// See http://stackoverflow.com/questions/7738666/uitextview-doesnt-show-until-it-is-scrolled
 		// Therefore, we clear the text and set it again. Dangit, that should not be necessary!
+		DEBUG_LOG( @"Performing ugly hack..." );
 		NSString *tmpText = textView.text;
 		textView.text = @"";
 		textView.text = tmpText;
@@ -647,31 +936,58 @@ static const CGFloat yCoords[] = {7, 101, 195, 289};
 
 - (IBAction)debug1Action:(id)sender
 {
-	// Toggle enabled status of buttons
-	UIButton *first = [mainScroller.subviews objectAtIndex:0];
-	BOOL enabled = !first.enabled;
-
-	if( enabled )
+	BOOL isEnabled;
+	
+	// iPhone or iPad?
+	if( UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad )
 	{
-		// Enable all buttons
-		[mainScroller.subviews enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
-			if( [obj isKindOfClass:[UIButton class]] )
-				[(UIButton*)obj setEnabled:YES];
-		}];
+		// iPad: get first button from currentButtonsView
+		for( UIView *subview in _currentButtonsView.subviews )
+		{
+			if( [subview isKindOfClass:[UIButton class]] )
+			{
+				isEnabled = [(UIButton*)subview isEnabled];
+				break;
+			}
+		}
+	}
+	else
+	{
+		// iPhone: get first button in mainScroller
+		for( UIView *subview in mainScroller.subviews )
+		{
+			if( [subview isKindOfClass:[UIButton class]] )
+			{
+				isEnabled = [(UIButton*)subview isEnabled];
+				break;
+			}
+		}
+	}
+
+	// Enable or disable all buttons
+	if( isEnabled )
+	{
+		[self disableButtons];
 		
-		// Show learn button
-		[toolbar setItems:[NSArray arrayWithObjects:debugButton, flexSpace, learnButton, nil] animated:YES];
+		// Set toolbar items
+		if( [toolbarItems containsObject:learnButton] )
+		{
+			[toolbarItems insertObject:scanButton atIndex:[toolbarItems indexOfObject:learnButton]];
+			[toolbarItems removeObject:learnButton];
+		}
+		[toolbar setItems:toolbarItems animated:YES];
 	}
 	else 
 	{
-		// Enable all buttons
-		[mainScroller.subviews enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
-			if( [obj isKindOfClass:[UIButton class]] )
-				[(UIButton*)obj setEnabled:NO];
-		}];
+		[self enableButtons];
 		
-		// Show learn button
-		[toolbar setItems:[NSArray arrayWithObjects:debugButton, flexSpace, scanButton, nil] animated:YES];
+		// Set toolbar items
+		if( [toolbarItems containsObject:scanButton] )
+		{
+			[toolbarItems insertObject:learnButton atIndex:[toolbarItems indexOfObject:scanButton]];
+			[toolbarItems removeObject:scanButton];
+		}
+		[toolbar setItems:toolbarItems animated:YES];
 	}
 }
 
@@ -710,167 +1026,5 @@ static const CGFloat yCoords[] = {7, 101, 195, 289};
 	[self print:@"Sending \"Y-000\""];
 	[connectedPeripheral writeValue:[@"Y-000" dataUsingEncoding:NSUTF8StringEncoding] forCharacteristic:GCACCommandCharacteristic type:CBCharacteristicWriteWithResponse];
 }
-
-#pragma mark - XML parser methods
-
-- (void)parseXMLFile:(NSString*)xmlFileName
-{
-	
-	/// TEMP: get from iTunes documents instead
-	NSError *error = nil;
-	TBXML *xml = [TBXML newTBXMLWithXMLFile:xmlFileName error:&error];
-	NSAssert( error == nil, @"Error opening xml file: %@", [error localizedDescription] );
-	
-	// Iterate pages
-	// iPhone or iPad?
-	if( UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad )
-		// iPad: parse and create 
-		[self iPad_readPages:xml.rootXMLElement];
-	else
-		// iPhone: parse and add to mainScroller and titleScroller
-		[self iPhone_readPages:xml.rootXMLElement];
-}
-
-- (void)iPad_readPages:(TBXMLElement*)rootElement
-{
-	NSMutableArray *tmpArray = [NSMutableArray array];
-	
-	// Iterate pages
-	TBXMLElement *page = [TBXML childElementNamed:@"page" parentElement:rootElement];
-	while( page )
-	{
-		NSString *pageName = [TBXML valueOfAttributeNamed:@"name" forElement:page];
-		[tmpArray addObject:pageName];
-		DEBUG_LOG( @"Found page '%@'", pageName );
-		
-		// Next page
-		page = [TBXML nextSiblingNamed:@"page" searchFromElement:page];
-	}
-	
-	// Set array and reload list
-	pages = [[NSArray alloc] initWithArray:tmpArray];
-	[masterViewController.tableView reloadData];
-}
-
-- (void)iPhone_readPages:(TBXMLElement*)rootElement
-{
-	// Get iPhone layout info
-	NSString *layoutPlistFilePath = [[NSBundle mainBundle] pathForResource:@"coordinates" ofType:@"plist"];
-	NSDictionary *layoutInfo = [NSDictionary dictionaryWithContentsOfFile:layoutPlistFilePath];
-	NSAssert( layoutInfo != nil, @"Error opening layout coordinates file!" );
-	
-	TBXMLElement *page = [TBXML childElementNamed:@"page" parentElement:rootElement];
-	NSMutableArray *pageNames = [NSMutableArray array];
-	CGFloat pageOffset = 0;
-	while( page )
-	{
-		int x=0, y=0;	// Coordinates
-		NSString *pageName = [TBXML valueOfAttributeNamed:@"name" forElement:page];
-		[pageNames addObject:pageName];
-		DEBUG_LOG( @"Found page '%@'", pageName );
-		
-		// Which layout?
-		NSString *layout = [TBXML valueOfAttributeNamed:@"layout" forElement:page];
-		NSDictionary *pageLayoutInfo = [layoutInfo objectForKey:layout];
-		NSAssert1( pageLayoutInfo, @"Unknown page layout: %@", layout );
-		
-		// Get coords from plist dictionary
-		int columns = [[pageLayoutInfo objectForKey:@"columns"] intValue];
-		int rows = [[pageLayoutInfo objectForKey:@"rows"] intValue];
-		NSString *filenameFormat = [pageLayoutInfo objectForKey:@"filenameFormat"];
-		CGFloat initialX = [[pageLayoutInfo objectForKey:@"initialX"] floatValue];
-		CGFloat initialY = [[pageLayoutInfo objectForKey:@"initialY"] floatValue];
-		CGFloat stepX = [[pageLayoutInfo objectForKey:@"stepX"] floatValue];
-		CGFloat stepY = [[pageLayoutInfo objectForKey:@"stepY"] floatValue];
-		
-		// Iterate rows
-		CGFloat xPos;
-		CGFloat yPos = initialY;	// Initial y position
-		TBXMLElement *row = [TBXML childElementNamed:@"row" parentElement:page];
-		while( row )
-		{
-			// Reset x position
-			xPos = initialX;
-			
-			// Iterate buttons
-			TBXMLElement *button = [TBXML childElementNamed:@"button" parentElement:row];
-			while( button )
-			{
-				// Extract attributes
-				NSString *color = [TBXML valueOfAttributeNamed:@"color" forElement:button];
-				NSString *text = [TBXML valueOfAttributeNamed:@"text" forElement:button];
-				NSString *image = [TBXML valueOfAttributeNamed:@"image" forElement:button];
-				NSUInteger number = [[TBXML valueOfAttributeNamed:@"id" forElement:button] intValue];
-				NSString *mode = [[TBXML valueOfAttributeNamed:@"mode" forElement:button] lowercaseString];
-				
-				// Make sure we have color and either text or image
-				if( [color length] > 0 && ([text length] > 0 || [image length] > 0) )
-				{
-					// Create and congure button
-					UIButton *btn = [UIButton buttonWithType:UIButtonTypeCustom];
-					UIImage *img = [UIImage imageNamed:[NSString stringWithFormat:filenameFormat, color]];
-					[btn setBackgroundImage:img forState:UIControlStateNormal];
-					btn.frame = CGRectMake( xPos + pageOffset, yPos, img.size.width, img.size.height );
-					
-					// Do we have text?
-					if( [text length] > 0 )
-					{
-						// Yes: configure label
-						[btn setTitle:text forState:UIControlStateNormal];
-						[btn setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
-						[btn setTitleColor:[UIColor grayColor] forState:UIControlStateDisabled];
-						[btn setTitleShadowColor:[UIColor whiteColor] forState:UIControlStateNormal];
-						[btn setTitleShadowColor:[UIColor clearColor] forState:UIControlStateDisabled];
-						btn.titleLabel.shadowOffset = CGSizeMake( 0, 1 );
-						btn.titleLabel.font = [UIFont boldSystemFontOfSize:15];
-					}
-					else 
-					{
-						// Otherwise we must have an image: set image
-						[btn setImage:[UIImage imageNamed:image] forState:UIControlStateNormal];
-					}
-					
-					btn.tag = number;
-					if( [mode isEqualToString:@"touchdown"] )
-						[btn addTarget:self action:@selector(sendCommandAction:) forControlEvents:UIControlEventTouchDown];
-					else if( [mode isEqualToString:@"repeat"] )
-					{
-						[btn addTarget:self action:@selector(repeatCommand:) forControlEvents:UIControlEventTouchDown];
-						[btn addTarget:self action:@selector(cancelRepeatCommand:) forControlEvents:UIControlEventTouchUpInside];
-						[btn addTarget:self action:@selector(cancelRepeatCommand:) forControlEvents:UIControlEventTouchUpOutside];
-					}
-					else 
-						[btn addTarget:self action:@selector(sendCommandAction:) forControlEvents:UIControlEventTouchUpInside];
-					[mainScroller addSubview:btn];
-					
-				}
-				
-				// Next button
-				xPos += stepX;
-				NSAssert( x < columns, @"Too many buttons in row: %s", row->text );
-				x++;
-				button = [TBXML nextSiblingNamed:@"button" searchFromElement:button];
-			}
-			
-			// Next row
-			yPos += stepY;
-			x = 0;
-			NSAssert( y < rows, @"Too many rows in page: %s", page->text );
-			y++;
-			row = [TBXML nextSiblingNamed:@"row" searchFromElement:row];
-		}
-		
-		// Next page
-		pageOffset += mainScroller.bounds.size.width;
-		page = [TBXML nextSiblingNamed:@"page" searchFromElement:page];
-	}
-	
-	// Set content size
-	mainScroller.contentSize = CGSizeMake( pageOffset, mainScroller.bounds.size.height );
-	
-	// Set page titles
-	[self populateTitleLabelScroller:pageNames];
-}
-
 
 @end

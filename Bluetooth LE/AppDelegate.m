@@ -90,7 +90,6 @@ static NSString* const kUserDefaults_PreferredDeviceKey = @"kUserDefaults_Prefer
 	
 	frame = CGRectInset( splashView.frame, -splashView.frame.size.width, -splashView.frame.size.height );
 	[UIView animateWithDuration:0.5 delay:1 options:0 animations:^{
-		DEBUG_LOG( @"Animating: %@", splashView ); 
 		splashView.alpha = 0;
 		splashView.frame = frame;
 	} completion:^(BOOL finished) {

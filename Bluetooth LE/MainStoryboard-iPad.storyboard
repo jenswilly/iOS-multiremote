@@ -19,7 +19,7 @@
                                 <rect key="frame" x="0.0" y="1004" width="768" height="400"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES"/>
                                 <subviews>
-                                    <textView clipsSubviews="YES" multipleTouchEnabled="YES" alpha="0.69999999999999996" contentMode="scaleToFill" alwaysBounceVertical="YES" editable="NO" text="Ready" id="LVn-Hy-2RM">
+                                    <textView opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" alpha="0.69999999999999996" contentMode="scaleToFill" alwaysBounceVertical="YES" editable="NO" text="Ready" id="LVn-Hy-2RM">
                                         <rect key="frame" x="0.0" y="0.0" width="768" height="400"/>
                                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                         <color key="backgroundColor" red="0.0" green="0.5" blue="1" alpha="1" colorSpace="calibratedRGB"/>
@@ -38,6 +38,9 @@
                                         <state key="highlighted">
                                             <color key="titleColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                         </state>
+                                        <connections>
+                                            <action selector="clearAction:" destination="5H9-G8-GMg" eventType="touchUpInside" id="wxm-CH-FLk"/>
+                                        </connections>
                                     </button>
                                     <button opaque="NO" alpha="0.5" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" id="M6e-DE-mo7">
                                         <rect key="frame" x="655" y="5" width="49" height="18"/>
@@ -50,6 +53,9 @@
                                         <state key="highlighted">
                                             <color key="titleColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                         </state>
+                                        <connections>
+                                            <action selector="debug1Action:" destination="5H9-G8-GMg" eventType="touchUpInside" id="DlO-Zr-ql7"/>
+                                        </connections>
                                     </button>
                                     <view contentMode="scaleToFill" id="Ila-Nd-MYv">
                                         <rect key="frame" x="0.0" y="0.0" width="768" height="1"/>
@@ -108,7 +114,7 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
                         <prototypes>
-                            <tableViewCell contentMode="scaleToFill" selectionStyle="gray" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="deviceCell" textLabel="fTN-jq-YXy" imageView="y9s-Mq-gFO" style="IBUITableViewCellStyleDefault" id="Cs1-mY-sQj" customClass="PageCell">
+                            <tableViewCell contentMode="scaleToFill" selectionStyle="none" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="deviceCell" textLabel="fTN-jq-YXy" imageView="y9s-Mq-gFO" style="IBUITableViewCellStyleDefault" id="Cs1-mY-sQj" customClass="PageCell">
                                 <rect key="frame" x="0.0" y="22" width="320" height="80"/>
                                 <autoresizingMask key="autoresizingMask"/>
                                 <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center">
@@ -182,16 +188,13 @@
         <class className="MainViewController" superclassName="UIViewController">
             <source key="sourceIdentifier" type="project" relativePath="./Classes/MainViewController.h"/>
             <relationships>
-                <relationship kind="action" name="cancelRepeatCommand:"/>
                 <relationship kind="action" name="clearAction:"/>
                 <relationship kind="action" name="debug1Action:"/>
                 <relationship kind="action" name="disconnectAction:"/>
                 <relationship kind="action" name="forgetPreferredAction:"/>
                 <relationship kind="action" name="learn:"/>
                 <relationship kind="action" name="readAction:"/>
-                <relationship kind="action" name="repeatCommand:" candidateClass="UIButton"/>
                 <relationship kind="action" name="scanAction:"/>
-                <relationship kind="action" name="sendCommandAction:"/>
                 <relationship kind="action" name="sendLearnAction:"/>
                 <relationship kind="action" name="sendTAction:"/>
                 <relationship kind="action" name="sendYAction:"/>
@@ -212,9 +215,6 @@
         </class>
         <class className="PageListViewController" superclassName="UITableViewController">
             <source key="sourceIdentifier" type="project" relativePath="./Classes/PageListViewController.h"/>
-            <relationships>
-                <relationship kind="outlet" name="detailViewController" candidateClass="MainViewController"/>
-            </relationships>
         </class>
     </classes>
     <simulatedMetricsContainer key="defaultSimulatedMetrics">

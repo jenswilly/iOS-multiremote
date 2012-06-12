@@ -84,6 +84,8 @@
 		477B11D91584E35000930672 /* orb_gray@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 477B11D51584E35000930672 /* orb_gray@2x.png */; };
 		477B11DA1584E35000930672 /* orb_green.png in Resources */ = {isa = PBXBuildFile; fileRef = 477B11D61584E35000930672 /* orb_green.png */; };
 		477B11DB1584E35000930672 /* orb_green@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 477B11D71584E35000930672 /* orb_green@2x.png */; };
+		477B11EA1586BDD000930672 /* coordinates-iPad.plist in Resources */ = {isa = PBXBuildFile; fileRef = 477B11E91586BDD000930672 /* coordinates-iPad.plist */; };
+		477B11EF1586BF1100930672 /* ButtonModel.m in Sources */ = {isa = PBXBuildFile; fileRef = 477B11EE1586BF1100930672 /* ButtonModel.m */; };
 		47C058F61561B36500F35DFD /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 47C058F51561B36500F35DFD /* AudioToolbox.framework */; };
 		47C058FD1561BAD800F35DFD /* tock.aif in Resources */ = {isa = PBXBuildFile; fileRef = 47C058FC1561BAD800F35DFD /* tock.aif */; };
 		47C058FF1561BB6200F35DFD /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 47C058FE1561BB6200F35DFD /* AVFoundation.framework */; };
@@ -192,6 +194,9 @@
 		477B11D51584E35000930672 /* orb_gray@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "orb_gray@2x.png"; sourceTree = "<group>"; };
 		477B11D61584E35000930672 /* orb_green.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = orb_green.png; sourceTree = "<group>"; };
 		477B11D71584E35000930672 /* orb_green@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "orb_green@2x.png"; sourceTree = "<group>"; };
+		477B11E91586BDD000930672 /* coordinates-iPad.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "coordinates-iPad.plist"; sourceTree = "<group>"; };
+		477B11ED1586BF1100930672 /* ButtonModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ButtonModel.h; sourceTree = "<group>"; };
+		477B11EE1586BF1100930672 /* ButtonModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ButtonModel.m; sourceTree = "<group>"; };
 		47C058F51561B36500F35DFD /* AudioToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioToolbox.framework; path = System/Library/Frameworks/AudioToolbox.framework; sourceTree = SDKROOT; };
 		47C058FC1561BAD800F35DFD /* tock.aif */ = {isa = PBXFileReference; lastKnownFileType = file; path = tock.aif; sourceTree = "<group>"; };
 		47C058FE1561BB6200F35DFD /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
@@ -230,6 +235,7 @@
 		473C9F50154F42A700842854 = {
 			isa = PBXGroup;
 			children = (
+				477B11EC1586BEEA00930672 /* Models */,
 				477B11C815843A3900930672 /* Views */,
 				47309C2F155AD5C60065F74E /* readme.md */,
 				473C9F65154F42A700842854 /* Bluetooth LE */,
@@ -295,6 +301,7 @@
 				472C18C31580B28B00240D73 /* MainStoryboard-iPad.storyboard */,
 				47C058FC1561BAD800F35DFD /* tock.aif */,
 				47C059461562A02700F35DFD /* coordinates.plist */,
+				477B11E91586BDD000930672 /* coordinates-iPad.plist */,
 				4747358C15605017008C5B84 /* remote.xml */,
 				474734E1155D9138008C5B84 /* Images */,
 				473C9F7F154F45B800842854 /* App Icon [Squared] */,
@@ -374,6 +381,16 @@
 				477B11CA15843A6300930672 /* PageCell.m */,
 			);
 			name = Views;
+			path = "Bluetooth LE";
+			sourceTree = "<group>";
+		};
+		477B11EC1586BEEA00930672 /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				477B11ED1586BF1100930672 /* ButtonModel.h */,
+				477B11EE1586BF1100930672 /* ButtonModel.m */,
+			);
+			name = Models;
 			path = "Bluetooth LE";
 			sourceTree = "<group>";
 		};
@@ -557,6 +574,7 @@
 				477B11D91584E35000930672 /* orb_gray@2x.png in Resources */,
 				477B11DA1584E35000930672 /* orb_green.png in Resources */,
 				477B11DB1584E35000930672 /* orb_green@2x.png in Resources */,
+				477B11EA1586BDD000930672 /* coordinates-iPad.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -575,6 +593,7 @@
 				4747358815604E34008C5B84 /* TBXML.m in Sources */,
 				472C18D61580BE6700240D73 /* PageListViewController.m in Sources */,
 				477B11CB15843A6300930672 /* PageCell.m in Sources */,
+				477B11EF1586BF1100930672 /* ButtonModel.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

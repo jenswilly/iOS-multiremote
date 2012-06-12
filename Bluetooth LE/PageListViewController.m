@@ -72,7 +72,8 @@
     // Configure the cell...
     cell.textLabel.text = [detailViewController.pages objectAtIndex:indexPath.row];
 	
-	if( indexPath.row == 1 )
+	// Set green or gray orb to indicate selected page
+	if( [detailViewController.currentPageName isEqualToString:cell.textLabel.text] )
 		cell.imageView.image = [UIImage imageNamed:@"orb_green.png"];
 	else 
 		cell.imageView.image = [UIImage imageNamed:@"orb_gray.png"];
@@ -84,7 +85,15 @@
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
-	[self.detailViewController toggleDebugAction:nil];
+	// Set selected page name
+	detailViewController.currentPageName = [detailViewController.pages objectAtIndex:indexPath.row];
+	
+	// Set new view
+	detailViewController.currentButtonsView = [detailViewController.pageContent objectForKey:[detailViewController.pages objectAtIndex:indexPath.row]];
+	
+	// Deselect cell
+	[tableView reloadData];
+//	[tableView deselectRowAtIndexPath:indexPath animated:YES];
 }
 
 @end

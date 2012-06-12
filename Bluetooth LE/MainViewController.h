@@ -9,6 +9,7 @@
 #import <UIKit/UIKit.h>
 #import <CoreBluetooth/CoreBluetooth.h>
 #import <AVFoundation/AVFoundation.h>
+#import "ButtonModel.h"
 @class PageListViewController;
 
 typedef enum
@@ -18,7 +19,7 @@ typedef enum
 	CommandModeRepeat
 } CommandMode;
 
-@interface MainViewController : UIViewController <CBCentralManagerDelegate, CBPeripheralDelegate, UIActionSheetDelegate, UIScrollViewDelegate, UISplitViewControllerDelegate>
+@interface MainViewController : UIViewController <CBCentralManagerDelegate, CBPeripheralDelegate, UIActionSheetDelegate, UIScrollViewDelegate, UISplitViewControllerDelegate, ButtonModelDelegate>
 {
 	NSTimer *scanTimer;
 	BOOL learning;
@@ -26,12 +27,12 @@ typedef enum
 	NSUInteger currentCommandNumber;
 	CommandMode commandMode;
 	NSMutableArray *toolbarItems;
-	NSArray *pages;						// iPad only
-	NSDictionary *pageContent;			// iPad only
 }
 
 @property (weak) PageListViewController *masterViewController;	// iPad only
-@property (readonly) NSArray *pages;	// iPad only
+@property (readonly) NSArray *pages;							// iPad only
+@property (readonly) NSDictionary *pageContent;					// iPad only
+@property (strong) NSString *currentPageName;					// iPad only
 @property (strong) CBCentralManager *centralManager;
 @property (strong) NSMutableArray *peripherals;
 @property (strong) NSMutableDictionary *peripheralNames;
@@ -48,9 +49,9 @@ typedef enum
 @property (strong, nonatomic) IBOutlet UIBarButtonItem *scanButton;
 @property (strong, nonatomic) IBOutlet UIBarButtonItem *flexSpace;
 @property (weak, nonatomic) IBOutlet UIToolbar *toolbar;
+@property (weak, nonatomic) UIView *currentButtonsView;			// iPad only
 
 - (IBAction)scanAction:(id)sender;
-- (IBAction)sendCommandAction:(id)sender;
 - (IBAction)disconnectAction:(id)sender;
 - (IBAction)clearAction:(id)sender;
 - (IBAction)forgetPreferredAction:(id)sender;
@@ -61,7 +62,5 @@ typedef enum
 - (IBAction)learn:(id)sender;
 - (IBAction)toggleDebugAction:(id)sender;
 - (IBAction)debug1Action:(id)sender;
-- (IBAction)repeatCommand:(UIButton*)sender;
-- (IBAction)cancelRepeatCommand:(id)sender;
 
 @end
