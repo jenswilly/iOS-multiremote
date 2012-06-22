@@ -1,15 +1,13 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="1.1" toolsVersion="2182" systemVersion="11E53" targetRuntime="iOS.CocoaTouch.iPad" propertyAccessControl="none" initialViewController="Edr-Y2-owp">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="2.0" toolsVersion="2541" systemVersion="11E53" targetRuntime="iOS.CocoaTouch.iPad" propertyAccessControl="none" initialViewController="Edr-Y2-owp">
     <dependencies>
-        <deployment defaultVersion="1296" identifier="iOS"/>
-        <development defaultVersion="4200" identifier="xcode"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="1181"/>
+        <deployment defaultVersion="1536" identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="1875"/>
     </dependencies>
     <scenes>
         <!--Main View Controller-->
         <scene sceneID="aYc-pn-Lj0">
             <objects>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="oir-Vg-fKh" userLabel="First Responder" sceneMemberID="firstResponder"/>
                 <viewController id="5H9-G8-GMg" customClass="MainViewController" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="3jd-gx-JHJ">
                         <rect key="frame" x="0.0" y="20" width="768" height="1004"/>
@@ -23,9 +21,9 @@
                                         <rect key="frame" x="0.0" y="0.0" width="768" height="400"/>
                                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                         <color key="backgroundColor" red="0.0" green="0.5" blue="1" alpha="1" colorSpace="calibratedRGB"/>
+                                        <textInputTraits key="textInputTraits" autocapitalizationType="sentences"/>
                                         <color key="textColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                         <fontDescription key="fontDescription" type="system" pointSize="12"/>
-                                        <textInputTraits key="textInputTraits" autocapitalizationType="sentences"/>
                                     </textView>
                                     <button opaque="NO" alpha="0.5" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" id="pDl-sl-iz7">
                                         <rect key="frame" x="712" y="6" width="49" height="18"/>
@@ -101,13 +99,13 @@
                         <outlet property="toolbar" destination="mqG-lo-KDq" id="glR-6u-TZd"/>
                     </connections>
                 </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="oir-Vg-fKh" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="593" y="277"/>
         </scene>
         <!--Page List View Controller - Pages-->
         <scene sceneID="Qzn-n2-UTj">
             <objects>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="HS4-yR-MJh" userLabel="First Responder" sceneMemberID="firstResponder"/>
                 <tableViewController title="Pages" clearsSelectionOnViewWillAppear="NO" id="3wT-EW-4MD" customClass="PageListViewController" sceneMemberID="viewController">
                     <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="none" rowHeight="80" sectionHeaderHeight="22" sectionFooterHeight="22" id="Svd-hd-v4U">
                         <rect key="frame" x="0.0" y="64" width="320" height="788"/>
@@ -121,12 +119,12 @@
                                     <rect key="frame" x="0.0" y="0.0" width="320" height="79"/>
                                     <autoresizingMask key="autoresizingMask"/>
                                     <subviews>
-                                        <label opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="left" text="Title" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="fTN-jq-YXy">
+                                        <label opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="left" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" text="Title" adjustsFontSizeToFit="NO" autoshrinkMode="none" id="fTN-jq-YXy">
                                             <rect key="frame" x="60" y="0.0" width="250" height="79"/>
                                             <autoresizingMask key="autoresizingMask"/>
-                                            <fontDescription key="fontDescription" type="boldSystem" pointSize="20"/>
-                                            <color key="textColor" red="0.87843137250000003" green="0.87058823529999996" blue="0.84705882349999995" alpha="1" colorSpace="calibratedRGB"/>
                                             <color key="highlightedColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
+                                            <color key="textColor" red="0.87843137250000003" green="0.87058823529999996" blue="0.84705882349999995" alpha="1" colorSpace="calibratedRGB"/>
+                                            <fontDescription key="fontDescription" type="boldSystem" pointSize="20"/>
                                         </label>
                                         <imageView opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" image="orb_gray.png" id="y9s-Mq-gFO">
                                             <rect key="frame" x="10" y="19" width="40" height="40"/>
@@ -145,13 +143,13 @@
                     </tableView>
                     <navigationItem key="navigationItem" title="Pages" id="O43-L1-0rH"/>
                 </tableViewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="HS4-yR-MJh" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="1119" y="-668"/>
         </scene>
         <!--Split View Controller-->
         <scene sceneID="oCw-67-NsG">
             <objects>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="KS5-Nk-19G" userLabel="First Responder" sceneMemberID="firstResponder"/>
                 <splitViewController id="Edr-Y2-owp" sceneMemberID="viewController">
                     <toolbarItems/>
                     <connections>
@@ -159,13 +157,13 @@
                         <segue destination="jy6-sw-LzB" kind="relationship" relationship="masterViewController" id="8ah-t0-UaS"/>
                     </connections>
                 </splitViewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="KS5-Nk-19G" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="-389" y="-191"/>
         </scene>
         <!--Navigation Controller-->
         <scene sceneID="I2J-nT-7pZ">
             <objects>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="VjA-Xt-1LQ" userLabel="First Responder" sceneMemberID="firstResponder"/>
                 <navigationController id="jy6-sw-LzB" sceneMemberID="viewController">
                     <toolbarItems/>
                     <navigationBar key="navigationBar" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" id="teq-5T-uv3">
@@ -177,6 +175,7 @@
                         <segue destination="3wT-EW-4MD" kind="relationship" relationship="rootViewController" id="Lgo-Hh-EeZ"/>
                     </connections>
                 </navigationController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="VjA-Xt-1LQ" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="593" y="-668"/>
         </scene>
@@ -184,39 +183,6 @@
     <resources>
         <image name="orb_gray.png" width="40" height="40"/>
     </resources>
-    <classes>
-        <class className="MainViewController" superclassName="UIViewController">
-            <source key="sourceIdentifier" type="project" relativePath="./Classes/MainViewController.h"/>
-            <relationships>
-                <relationship kind="action" name="clearAction:"/>
-                <relationship kind="action" name="debug1Action:"/>
-                <relationship kind="action" name="disconnectAction:"/>
-                <relationship kind="action" name="forgetPreferredAction:"/>
-                <relationship kind="action" name="learn:"/>
-                <relationship kind="action" name="readAction:"/>
-                <relationship kind="action" name="scanAction:"/>
-                <relationship kind="action" name="sendLearnAction:"/>
-                <relationship kind="action" name="sendTAction:"/>
-                <relationship kind="action" name="sendYAction:"/>
-                <relationship kind="action" name="toggleDebugAction:"/>
-                <relationship kind="outlet" name="debugButton" candidateClass="UIBarButtonItem"/>
-                <relationship kind="outlet" name="debugView" candidateClass="UIView"/>
-                <relationship kind="outlet" name="flexSpace" candidateClass="UIBarButtonItem"/>
-                <relationship kind="outlet" name="learnButton" candidateClass="UIBarButtonItem"/>
-                <relationship kind="outlet" name="mainScroller" candidateClass="UIScrollView"/>
-                <relationship kind="outlet" name="pageLabelScroller" candidateClass="UIScrollView"/>
-                <relationship kind="outlet" name="scanButton" candidateClass="UIBarButtonItem"/>
-                <relationship kind="outlet" name="textView" candidateClass="UITextView"/>
-                <relationship kind="outlet" name="toolbar" candidateClass="UIToolbar"/>
-            </relationships>
-        </class>
-        <class className="PageCell" superclassName="UITableViewCell">
-            <source key="sourceIdentifier" type="project" relativePath="./Classes/PageCell.h"/>
-        </class>
-        <class className="PageListViewController" superclassName="UITableViewController">
-            <source key="sourceIdentifier" type="project" relativePath="./Classes/PageListViewController.h"/>
-        </class>
-    </classes>
     <simulatedMetricsContainer key="defaultSimulatedMetrics">
         <simulatedStatusBarMetrics key="statusBar" statusBarStyle="blackTranslucent"/>
         <simulatedOrientationMetrics key="orientation"/>

@@ -26,9 +26,12 @@ static NSString* const kUserDefaults_PreferredDeviceKey = @"kUserDefaults_Prefer
 	}
 	
 	[self.window makeKeyAndVisible];
-	[self showSplash];
 	[self setAppearance];
-	
+
+	// Show splash screen _after_ application:didFinishLaunchingWithOptions: has returned.
+	// Only at that point can [[UIDevice currentDevice] orientation] be relied on.
+	[self performSelectorOnMainThread:@selector(showSplash) withObject:nil waitUntilDone:NO];
+
     return YES;
 }
 	

@@ -285,6 +285,7 @@ static const CGFloat yCoords[] = {7, 101, 195, 289};
 			
         case CBCentralManagerStatePoweredOn:
 			[self print:@"Core Bluetooth ready."];
+			// Start scanning
 			break;
     }
 }
@@ -458,7 +459,7 @@ static const CGFloat yCoords[] = {7, 101, 195, 289};
 	if( error != nil )
 	{
 		// Error
-		[self print:[NSString stringWithFormat:@"Error writing command value: %@", [characteristic.UUID string], [error localizedDescription]]];
+		[self print:[NSString stringWithFormat:@"Error writing command value: %@", [error localizedDescription]]];
 		return;
 	}
 	
@@ -520,7 +521,6 @@ static const CGFloat yCoords[] = {7, 101, 195, 289};
 
 - (void)parseXMLFile:(NSString*)xmlFileName
 {
-	
 	/// TEMP: get from iTunes documents instead
 	NSError *error = nil;
 	TBXML *xml = [TBXML newTBXMLWithXMLFile:xmlFileName error:&error];
@@ -539,7 +539,7 @@ static const CGFloat yCoords[] = {7, 101, 195, 289};
 - (void)iPad_readPages:(TBXMLElement*)rootElement
 {
 	// Get layout info
-	NSString *layoutPlistFilePath = [[NSBundle mainBundle] pathForResource:@"coordinates-iPad" ofType:@"plist"];
+	NSString *layoutPlistFilePath = [[NSBundle mainBundle] pathForResource:@"coordinates" ofType:@"plist"];
 	NSDictionary *layoutInfo = [NSDictionary dictionaryWithContentsOfFile:layoutPlistFilePath];
 	NSAssert( layoutInfo != nil, @"Error opening layout coordinates file!" );
 	
@@ -786,6 +786,13 @@ static const CGFloat yCoords[] = {7, 101, 195, 289};
 
 - (IBAction)scanAction:(id)sender
 {
+	// Only scan if BT is powered up
+	if( centralManager.state != CBCentralManagerStatePoweredOn )
+	{
+		[self print:@"Bluetooth off – not scanning."];
+		return;
+	}
+	
 	// Show HUD
 	[MBProgressHUD showHUDAddedTo:self.view animated:YES];
 	
@@ -936,7 +943,7 @@ static const CGFloat yCoords[] = {7, 101, 195, 289};
 
 - (IBAction)debug1Action:(id)sender
 {
-	BOOL isEnabled;
+	BOOL isEnabled = NO;
 	
 	// iPhone or iPad?
 	if( UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad )

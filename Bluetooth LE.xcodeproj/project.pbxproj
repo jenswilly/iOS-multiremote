@@ -84,7 +84,7 @@
 		477B11D91584E35000930672 /* orb_gray@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 477B11D51584E35000930672 /* orb_gray@2x.png */; };
 		477B11DA1584E35000930672 /* orb_green.png in Resources */ = {isa = PBXBuildFile; fileRef = 477B11D61584E35000930672 /* orb_green.png */; };
 		477B11DB1584E35000930672 /* orb_green@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 477B11D71584E35000930672 /* orb_green@2x.png */; };
-		477B11EA1586BDD000930672 /* coordinates-iPad.plist in Resources */ = {isa = PBXBuildFile; fileRef = 477B11E91586BDD000930672 /* coordinates-iPad.plist */; };
+		477B11EA1586BDD000930672 /* coordinates~iPad.plist in Resources */ = {isa = PBXBuildFile; fileRef = 477B11E91586BDD000930672 /* coordinates~iPad.plist */; };
 		477B11EF1586BF1100930672 /* ButtonModel.m in Sources */ = {isa = PBXBuildFile; fileRef = 477B11EE1586BF1100930672 /* ButtonModel.m */; };
 		47C058F61561B36500F35DFD /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 47C058F51561B36500F35DFD /* AudioToolbox.framework */; };
 		47C058FD1561BAD800F35DFD /* tock.aif in Resources */ = {isa = PBXBuildFile; fileRef = 47C058FC1561BAD800F35DFD /* tock.aif */; };
@@ -194,7 +194,7 @@
 		477B11D51584E35000930672 /* orb_gray@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "orb_gray@2x.png"; sourceTree = "<group>"; };
 		477B11D61584E35000930672 /* orb_green.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = orb_green.png; sourceTree = "<group>"; };
 		477B11D71584E35000930672 /* orb_green@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "orb_green@2x.png"; sourceTree = "<group>"; };
-		477B11E91586BDD000930672 /* coordinates-iPad.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "coordinates-iPad.plist"; sourceTree = "<group>"; };
+		477B11E91586BDD000930672 /* coordinates~iPad.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "coordinates~iPad.plist"; sourceTree = "<group>"; };
 		477B11ED1586BF1100930672 /* ButtonModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ButtonModel.h; sourceTree = "<group>"; };
 		477B11EE1586BF1100930672 /* ButtonModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ButtonModel.m; sourceTree = "<group>"; };
 		47C058F51561B36500F35DFD /* AudioToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioToolbox.framework; path = System/Library/Frameworks/AudioToolbox.framework; sourceTree = SDKROOT; };
@@ -301,7 +301,7 @@
 				472C18C31580B28B00240D73 /* MainStoryboard-iPad.storyboard */,
 				47C058FC1561BAD800F35DFD /* tock.aif */,
 				47C059461562A02700F35DFD /* coordinates.plist */,
-				477B11E91586BDD000930672 /* coordinates-iPad.plist */,
+				477B11E91586BDD000930672 /* coordinates~iPad.plist */,
 				4747358C15605017008C5B84 /* remote.xml */,
 				474734E1155D9138008C5B84 /* Images */,
 				473C9F7F154F45B800842854 /* App Icon [Squared] */,
@@ -574,7 +574,7 @@
 				477B11D91584E35000930672 /* orb_gray@2x.png in Resources */,
 				477B11DA1584E35000930672 /* orb_green.png in Resources */,
 				477B11DB1584E35000930672 /* orb_green@2x.png in Resources */,
-				477B11EA1586BDD000930672 /* coordinates-iPad.plist in Resources */,
+				477B11EA1586BDD000930672 /* coordinates~iPad.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

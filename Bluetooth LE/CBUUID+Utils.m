@@ -21,7 +21,7 @@
 		return nil;
 	
     CFStringRef string = CFUUIDCreateString( NULL, uuid );
-	return (__bridge NSString*)string;
+	return (__bridge_transfer NSString*)string;
 }
 
 /* Equality

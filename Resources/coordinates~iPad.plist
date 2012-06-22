@@ -22,7 +22,7 @@
 	<key>large_buttons</key>
 	<dict>
 		<key>initialX</key>
-		<integer>192</integer>
+		<integer>0</integer>
 		<key>initialY</key>
 		<integer>31</integer>
 		<key>stepX</key>
