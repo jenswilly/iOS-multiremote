@@ -50,6 +50,8 @@ typedef enum
 @property (strong, nonatomic) IBOutlet UIBarButtonItem *flexSpace;
 @property (weak, nonatomic) IBOutlet UIToolbar *toolbar;
 @property (weak, nonatomic) UIView *currentButtonsView;			// iPad only
+@property (weak, nonatomic) IBOutlet UIView *contentView;		// iPad only
+@property (weak) UIPopoverController *popover;					// iPad only
 
 - (IBAction)scanAction:(id)sender;
 - (IBAction)disconnectAction:(id)sender;

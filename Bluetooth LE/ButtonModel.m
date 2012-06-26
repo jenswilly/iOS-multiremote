@@ -57,12 +57,12 @@
 	{
 		// Yes: configure label
 		[btn setTitle:self.text forState:UIControlStateNormal];
-		[btn setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
+		[btn setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
 		[btn setTitleColor:[UIColor grayColor] forState:UIControlStateDisabled];
-		[btn setTitleShadowColor:[UIColor whiteColor] forState:UIControlStateNormal];
+		[btn setTitleShadowColor:[UIColor blackColor] forState:UIControlStateNormal];
 		[btn setTitleShadowColor:[UIColor clearColor] forState:UIControlStateDisabled];
-		btn.titleLabel.shadowOffset = CGSizeMake( 0, 1 );
-		btn.titleLabel.font = [UIFont boldSystemFontOfSize:15];
+		btn.titleLabel.shadowOffset = CGSizeMake( 0, -1 );
+		btn.titleLabel.font = [UIFont boldSystemFontOfSize:( UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad ? 30 : 15 )];
 	}
 	else 
 	{

@@ -30,7 +30,7 @@ static NSString* const kUserDefaults_PreferredDeviceKey = @"kUserDefaults_Prefer
 
 	// Show splash screen _after_ application:didFinishLaunchingWithOptions: has returned.
 	// Only at that point can [[UIDevice currentDevice] orientation] be relied on.
-	[self performSelectorOnMainThread:@selector(showSplash) withObject:nil waitUntilDone:NO];
+	// [self performSelectorOnMainThread:@selector(showSplash) withObject:nil waitUntilDone:NO];
 
     return YES;
 }
@@ -79,8 +79,11 @@ static NSString* const kUserDefaults_PreferredDeviceKey = @"kUserDefaults_Prefer
 		}
 	}
 	else
+	{
 		// iPhone
 		image = [UIImage imageNamed:@"Default.png"];
+		origin = CGPointMake( 0, -20 );		// Adjust for status bar
+	}
 	
 	
 	// Instantiate image view and adjust rotation and origin
@@ -140,9 +143,9 @@ static NSString* const kUserDefaults_PreferredDeviceKey = @"kUserDefaults_Prefer
 	// Restart any tasks that were paused (or not yet started) while the application was inactive. If the application was previously in the background, optionally refresh the user interface.
 	[self loadPreferredDevice];
 	
-	// Connect if not already connected
+	// Connect if not already connected and Bluetooth ready
 	MainViewController *viewController = [self mainViewController];
-	if( !viewController.connectedPeripheral )
+	if( !viewController.connectedPeripheral && viewController.centralManager.state == CBCentralManagerStatePoweredOn )
 		[viewController scanAction:nil];
 }
 
@@ -183,5 +186,7 @@ static NSString* const kUserDefaults_PreferredDeviceKey = @"kUserDefaults_Prefer
 														  [UIColor blackColor], UITextAttributeTextShadowColor,
 														  [NSValue valueWithCGSize:CGSizeMake(0, 1)], UITextAttributeTextShadowOffset,
 														  nil]];
+	
+	[[UIBarButtonItem appearance] setBackgroundImage:[UIImage imageNamed:@"metal_btn"] forState:UIControlStateNormal barMetrics:UIBarMetricsDefault];
 }
 @end

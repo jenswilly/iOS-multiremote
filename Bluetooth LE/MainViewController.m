@@ -24,35 +24,27 @@
 static const CGFloat xCoords[] = {24, 117, 210};
 static const CGFloat yCoords[] = {7, 101, 195, 289};
 
-@interface MainViewController ()
-- (void)print:(NSString*)text;
-- (void)scanTimeout:(NSTimer*)timer;
-- (void)populateTitleLabelScroller:(NSArray*)pageTitles;
-- (void)parseXMLFile:(NSString*)xmlFileName;
-- (void)sendCommand:(NSUInteger)commandNumber;
-- (void)iPhone_readPages:(TBXMLElement*)rootElement;
-- (void)iPad_readPages:(TBXMLElement*)rootElement;
-- (void)disableButtons;
-- (void)enableButtons;
-
-@end
-
 @implementation MainViewController
+@synthesize contentView = _contentView;
 @synthesize centralManager, peripherals, connectedPeripheral, GCACService, GCACCommandCharacteristic, GCACResponseCharacteristic, peripheralNames, pages, pageContent, masterViewController, currentButtonsView = _currentButtonsView, currentPageName;
-@synthesize learnButton;
-@synthesize debugButton;
-@synthesize scanButton;
-@synthesize flexSpace;
-@synthesize toolbar;
-@synthesize pageLabelScroller;
-@synthesize textView;
-@synthesize debugView;
-@synthesize mainScroller;
+@synthesize learnButton = _learnButton;
+@synthesize debugButton = _debugButton;
+@synthesize scanButton = _scanButton;
+@synthesize flexSpace = _flexSpace;
+@synthesize toolbar = _toolbar;
+@synthesize pageLabelScroller = _pageLabelScroller;
+@synthesize textView = _textView;
+@synthesize debugView = _debugView;
+@synthesize mainScroller = _mainScroller;
+@synthesize popover = _popover;
 
 - (void)viewDidLoad
 {
     [super viewDidLoad];
 
+	// Show splash
+	[self showSplash];
+	
 	// Set background for iPad
 	// iPhone or iPad?
 	if( UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad )
@@ -72,20 +64,38 @@ static const CGFloat yCoords[] = {7, 101, 195, 289};
 	NSAssert( error == nil, @"Error loading sound: %@", [error localizedDescription] );
     [audioPlayer prepareToPlay];
 	
-	// Appearance
-	[debugButton setBackgroundImage:[UIImage imageNamed:@"topbtn_debug.png"] forState:UIControlStateNormal barMetrics:UIBarMetricsDefault];
-	[scanButton setBackgroundImage:[UIImage imageNamed:@"topbtn_scan.png"] forState:UIControlStateNormal barMetrics:UIBarMetricsDefault];
-	[learnButton setBackgroundImage:[UIImage imageNamed:@"topbtn_learn.png"] forState:UIControlStateNormal barMetrics:UIBarMetricsDefault];
-	
 	// Set toolbar items
-	toolbarItems = [NSMutableArray arrayWithObjects:flexSpace, scanButton, debugButton, nil];
-	[toolbar setItems:toolbarItems animated:YES];
+	toolbarItems = [NSMutableArray arrayWithObjects:_flexSpace, _scanButton, _debugButton, nil];
+	[_toolbar setItems:toolbarItems animated:YES];
 	 
 	// Load xml
-	[self parseXMLFile:@"remote.xml"];
+	// iPhone or iPad?
+	/// BUG: this shouldn't be necessary – maybe iOS 6 doesn't support ~iPad postfix for iPad files yet?
+	if( UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad )
+		[self parseXMLFile:@"remote~iPad.xml"];
+	else
+		[self parseXMLFile:@"remote.xml"];
+
 	
 	// Disable all buttons requiring a connection
 	[self disableButtons];
+	
+	/*
+	// Pulsing red light when learning
+	self.view.layer.shadowOpacity = 0.0;
+	
+	// Prepare round red shadow for pulsing red light
+	float btnWidth = self.view.frame.size.width;
+	float btnHeight = self.view.frame.size.height;
+	float shadowWidth = SHADOW_RADIUS * btnWidth;
+	float shadowHeight = SHADOW_RADIUS * btnHeight;
+	CGPathRef shadowPath = [UIBezierPath bezierPathWithOvalInRect:CGRectMake( 0, 0, shadowWidth, shadowHeight)].CGPath;
+	self.view.layer.shadowOffset = CGSizeMake(- (shadowWidth - btnWidth) * 0.5, - (shadowHeight - btnHeight) * 0.5);
+	self.view.layer.shadowRadius = btnWidth / 4;
+	self.view.layer.shadowOpacity = 0.0;
+	self.view.layer.shadowColor = [UIColor redColor].CGColor;
+	self.view.layer.shadowPath = shadowPath;
+	 */
 	
 	commandMode = CommandModeIdle;
 }
@@ -101,6 +111,7 @@ static const CGFloat yCoords[] = {7, 101, 195, 289};
 	[self setFlexSpace:nil];
 	[self setToolbar:nil];
 	[self setPageLabelScroller:nil];
+	[self setContentView:nil];
     [super viewDidUnload];
 }
 
@@ -124,8 +135,8 @@ static const CGFloat yCoords[] = {7, 101, 195, 289};
 - (void)scrollViewDidScroll:(UIScrollView *)scrollView
 {
 	// Calculate position for title scroller: one page in the main scroller corresponds to 80px in the title scroller
-	CGFloat titleScrollerOffset = -160 + mainScroller.contentOffset.x / 320 * 80;
-	pageLabelScroller.contentOffset = CGPointMake( titleScrollerOffset, 0 );
+	CGFloat titleScrollerOffset = -160 + _mainScroller.contentOffset.x / 320 * 80;
+	_pageLabelScroller.contentOffset = CGPointMake( titleScrollerOffset, 0 );
 }
 
 #pragma mark - Private methods
@@ -149,29 +160,29 @@ static const CGFloat yCoords[] = {7, 101, 195, 289};
 		// Position
 		CGRect frame = label.frame;
 		frame.origin.x = xPos - frame.size.width/2;
-		frame.origin.y = pageLabelScroller.bounds.size.height/2 - frame.size.height/2;
+		frame.origin.y = _pageLabelScroller.bounds.size.height/2 - frame.size.height/2;
 		label.frame = frame;
 		xPos += 80;
 		maxX = CGRectGetMaxX( label.frame );
 		
-		[pageLabelScroller addSubview:label];
+		[_pageLabelScroller addSubview:label];
 	}
 	
 	// Initial position
-	pageLabelScroller.contentSize = CGSizeMake( maxX, pageLabelScroller.bounds.size.height );
-	pageLabelScroller.contentOffset = CGPointMake( -160, 0 );
+	_pageLabelScroller.contentSize = CGSizeMake( maxX, _pageLabelScroller.bounds.size.height );
+	_pageLabelScroller.contentOffset = CGPointMake( -160, 0 );
 }
 
 - (void)print:(NSString *)text
 {
 	DEBUG_LOG( @"--> %@", text );
 #if DEBUG
-	textView.text = [textView.text stringByAppendingFormat:@"\r%@", text];
-	[textView scrollRangeToVisible:NSMakeRange( [textView.text length]-1, 1 )];
+	_textView.text = [_textView.text stringByAppendingFormat:@"\r%@", text];
+	[_textView scrollRangeToVisible:NSMakeRange( [_textView.text length]-1, 1 )];
 #endif
 }
 
-- (void)scanTimeout:(NSTimer *)timer
+- (void)scanTimeout:(NSTimer*)timer
 {
 	// Stop scanning
 	[centralManager stopScan];
@@ -182,7 +193,13 @@ static const CGFloat yCoords[] = {7, 101, 195, 289};
 	if( [peripherals count] > 0 )
 	{
 		// We found some: show action sheet
-		UIActionSheet *actionSheet = [[UIActionSheet alloc] initWithTitle:@"Connect to device" delegate:self cancelButtonTitle:@"Cancel" destructiveButtonTitle:nil otherButtonTitles:nil];
+		
+		/// BUG: iOS 6 fix
+		UIActionSheet *actionSheet = [[UIActionSheet alloc] initWithTitle:@"Connect to device" delegate:self cancelButtonTitle:@"Cancel" destructiveButtonTitle:nil otherButtonTitles:@"Device", nil];
+		
+		/// BUG: iOS 6 – can't add buttons in iOS 6 :(
+		/*
+		UIActionSheet *actionSheet = [[UIActionSheet alloc] initWithTitle:@"Connect to device" delegate:self cancelButtonTitle:@"Cancel" destructiveButtonTitle:nil otherButtonTitles:@"Thing", nil];
 		
 		// Iterate devices
 		for( CBPeripheral *peripheral in peripherals )
@@ -195,6 +212,7 @@ static const CGFloat yCoords[] = {7, 101, 195, 289};
 				// No: use UUID
 				[actionSheet addButtonWithTitle:[CBUUID stringFromCFUUIDRef:peripheral.UUID]];
 		}
+		 */
 		[actionSheet showInView:self.view];
 	}
 	else 
@@ -205,13 +223,13 @@ static const CGFloat yCoords[] = {7, 101, 195, 289};
 		[alert show];
 		
 		// Set last item of the toolbar to the scan button (enabled)
-		scanButton.enabled = YES;
-		if( [toolbarItems containsObject:learnButton] )
+		_scanButton.enabled = YES;
+		if( [toolbarItems containsObject:_learnButton] )
 		{
-			[toolbarItems insertObject:scanButton atIndex:[toolbarItems indexOfObject:learnButton]];
-			[toolbarItems removeObject:learnButton];
+			[toolbarItems insertObject:_scanButton atIndex:[toolbarItems indexOfObject:_learnButton]];
+			[toolbarItems removeObject:_learnButton];
 		}
-		[toolbar setItems:toolbarItems animated:YES];
+		[_toolbar setItems:toolbarItems animated:YES];
 	}
 }
 
@@ -235,12 +253,12 @@ static const CGFloat yCoords[] = {7, 101, 195, 289};
 		learning = NO;
 		
 		// Change font color on all buttons
-		[mainScroller.subviews enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+		[_mainScroller.subviews enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
 			if( [obj isKindOfClass:[UIButton class]] )
 			{
 				UIButton *button = (UIButton*)obj;	// Typecast
-				[button setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
-				[button setTitleShadowColor:[UIColor whiteColor] forState:UIControlStateNormal];
+				[button setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
+				[button setTitleShadowColor:[UIColor blackColor] forState:UIControlStateNormal];
 			}
 		}];
 	}
@@ -252,12 +270,28 @@ static const CGFloat yCoords[] = {7, 101, 195, 289};
 {
 	// Was it cancel?
 	if( buttonIndex == actionSheet.cancelButtonIndex )
-		// Yes: do nothing
+	{
+		// Yes: enable scan button and exit
+		_scanButton.enabled = YES;
 		return;
+	}
 	
 	// Otherwise, connect to specified device
+	CBPeripheral *peripheral;
+	
+	// iPhone or iPad?
+	if( UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad )
+	{
+		peripheral = [peripherals objectAtIndex:0];
+	}
+	else
+	{
+		peripheral = [peripherals objectAtIndex:buttonIndex - 1];	// -1 for the Cancel button
+	}
+	
+	DEBUG_LOG( @"Peripheral: %@", [peripheral description] );
+
 	[MBProgressHUD showHUDAddedTo:self.view animated:YES];
-	CBPeripheral *peripheral = [peripherals objectAtIndex:buttonIndex - 1];	// -1 for the Cancel button
 	[centralManager connectPeripheral:peripheral options:[NSDictionary dictionaryWithObject:[NSNumber numberWithBool:YES] forKey:CBConnectPeripheralOptionNotifyOnDisconnectionKey]];
 }
 
@@ -285,7 +319,8 @@ static const CGFloat yCoords[] = {7, 101, 195, 289};
 			
         case CBCentralManagerStatePoweredOn:
 			[self print:@"Core Bluetooth ready."];
-			// Start scanning
+			// Start scanning if not connected
+			[self scanAction:nil];
 			break;
     }
 }
@@ -342,7 +377,7 @@ static const CGFloat yCoords[] = {7, 101, 195, 289};
 	
 	// Disable all buttons requiring a connection
 	[self disableButtons];
-	[toolbar setItems:[NSArray arrayWithObjects:debugButton, flexSpace, scanButton, nil] animated:YES];
+	[_toolbar setItems:[NSArray arrayWithObjects:_debugButton, _flexSpace, _scanButton, nil] animated:YES];
 }
 
 - (void)centralManager:(CBCentralManager *)central didFailToConnectPeripheral:(CBPeripheral *)peripheral error:(NSError *)error
@@ -403,7 +438,7 @@ static const CGFloat yCoords[] = {7, 101, 195, 289};
 				[self enableButtons];
 				
 				// Set toolbar items
-				[toolbar setItems:[NSArray arrayWithObjects:debugButton, flexSpace, learnButton, nil] animated:YES];
+				[_toolbar setItems:[NSArray arrayWithObjects:_debugButton, _flexSpace, _learnButton, nil] animated:YES];
 			}
 			else if( [characteristic.UUID isEqualToUUIDString:UUID_RESPONSE_CHARACTERISTIC] )
 			{
@@ -473,18 +508,21 @@ static const CGFloat yCoords[] = {7, 101, 195, 289};
 
 - (void)splitViewController:(UISplitViewController *)svc willHideViewController:(UIViewController *)aViewController withBarButtonItem:(UIBarButtonItem *)barButtonItem forPopoverController:(UIPopoverController *)pc
 {
-	[barButtonItem setBackgroundImage:[UIImage imageNamed:@"topbtn_debug.png"] forState:UIControlStateNormal barMetrics:UIBarMetricsDefault];
+	[barButtonItem setImage:[UIImage imageNamed:@"barbtn_debug"]];
 
 	// Add the button to toolbar items array
 	[toolbarItems insertObject:barButtonItem atIndex:0];
-	[toolbar setItems:toolbarItems animated:YES];
+	[_toolbar setItems:toolbarItems animated:YES];
+	
+	// Remember popover
+	self.popover = pc;
 }
 
 - (void)splitViewController:(UISplitViewController *)svc willShowViewController:(UIViewController *)aViewController invalidatingBarButtonItem:(UIBarButtonItem *)barButtonItem
 {
 	// Remove the bar button from toolbar items
 	[toolbarItems removeObject:barButtonItem];
-	[toolbar setItems:toolbarItems animated:YES];
+	[_toolbar setItems:toolbarItems animated:YES];
 }
 
 #pragma mark - ButtonModelDelegate methods
@@ -539,7 +577,15 @@ static const CGFloat yCoords[] = {7, 101, 195, 289};
 - (void)iPad_readPages:(TBXMLElement*)rootElement
 {
 	// Get layout info
-	NSString *layoutPlistFilePath = [[NSBundle mainBundle] pathForResource:@"coordinates" ofType:@"plist"];
+	NSString *layoutPlistFilePath;
+	
+	// iPhone or iPad?
+	/// BUG: shouldn't be necessary – iOS 6 doesn't support ~iPad postfix
+	if( UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad )
+		layoutPlistFilePath = [[NSBundle mainBundle] pathForResource:@"coordinates~iPad" ofType:@"plist"];
+	else
+		layoutPlistFilePath = [[NSBundle mainBundle] pathForResource:@"coordinates" ofType:@"plist"];
+
 	NSDictionary *layoutInfo = [NSDictionary dictionaryWithContentsOfFile:layoutPlistFilePath];
 	NSAssert( layoutInfo != nil, @"Error opening layout coordinates file!" );
 	
@@ -573,7 +619,7 @@ static const CGFloat yCoords[] = {7, 101, 195, 289};
 		CGFloat stepY = [[pageLayoutInfo objectForKey:@"stepY"] floatValue];
 		
 		// Create view for this page
-		UIView *pageView = [[UIView alloc] initWithFrame:CGRectMake( 0, CGRectGetMaxY( toolbar.frame ), self.view.bounds.size.width, self.view.bounds.size.height - CGRectGetMaxY( toolbar.frame ))];
+		UIView *pageView = [[UIView alloc] initWithFrame:_contentView.bounds];
 		pageView.backgroundColor = [UIColor clearColor];
 		
 		// Iterate rows
@@ -692,7 +738,7 @@ static const CGFloat yCoords[] = {7, 101, 195, 289};
 				btn.frame = frame;
 				
 				// Add it
-				[mainScroller addSubview:btn];
+				[_mainScroller addSubview:btn];
 				
 				// Next button
 				xPos += stepX;
@@ -710,18 +756,87 @@ static const CGFloat yCoords[] = {7, 101, 195, 289};
 		}
 		
 		// Next page
-		pageOffset += mainScroller.bounds.size.width;
+		pageOffset += _mainScroller.bounds.size.width;
 		page = [TBXML nextSiblingNamed:@"page" searchFromElement:page];
 	}
 	
 	// Set content size
-	mainScroller.contentSize = CGSizeMake( pageOffset, mainScroller.bounds.size.height );
+	_mainScroller.contentSize = CGSizeMake( pageOffset, _mainScroller.bounds.size.height );
 	
 	// Set page titles
 	[self populateTitleLabelScroller:pageNames];
 }
 
 #pragma mark - Other methods
+
+- (void)showSplash
+{
+	UIInterfaceOrientation orient = self.interfaceOrientation;
+	DEBUG_LOG( @"showSplash: orientation: %d", orient );
+	
+	// Create image view with image that match device and orientation
+	UIImage *image;
+	CGAffineTransform transform = CGAffineTransformIdentity;
+	CGPoint origin = CGPointZero;
+	
+	if( UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad )
+	{
+		// iPad: which orientation?
+		[[UIDevice currentDevice] beginGeneratingDeviceOrientationNotifications];
+		UIDeviceOrientation orientation = [[UIDevice currentDevice] orientation];
+		if( UIDeviceOrientationIsLandscape( orientation ))
+		{
+			// We need to rotate image view
+			if( orientation == UIDeviceOrientationLandscapeLeft )
+			{
+				transform = CGAffineTransformMakeRotation( M_PI_2 );
+				//	origin = CGPointMake( -20, 0 );
+			}
+			else if( orientation == UIDeviceOrientationLandscapeRight )
+			{
+				transform = CGAffineTransformMakeRotation( -M_PI_2 );
+				origin = CGPointMake( 20, 0 );
+			}
+			
+			// Load image
+			image = [UIImage imageNamed:@"Default-Landscape.png"];
+			
+		}
+		else
+		{
+			// Rotate if upside-down
+			if( orientation == UIDeviceOrientationPortraitUpsideDown )
+				transform = CGAffineTransformMakeRotation( M_PI );
+			else
+				origin = CGPointMake( 0, 20 );
+			
+			image = [UIImage imageNamed:@"Default-Portrait.png"];
+		}
+	}
+	else
+	{
+		// iPhone
+		image = [UIImage imageNamed:@"Default.png"];
+		origin = CGPointMake( 0, -20 );		// Adjust for status bar
+	}
+	
+	
+	// Instantiate image view and adjust rotation and origin
+	UIImageView *splashView = [[UIImageView alloc] initWithImage:image];
+	[self.view addSubview:splashView];
+	splashView.transform = transform;
+	CGRect frame = splashView.frame;
+	frame.origin = origin;
+	splashView.frame = frame;
+	
+	frame = CGRectInset( splashView.frame, -splashView.frame.size.width, -splashView.frame.size.height );
+	[UIView animateWithDuration:0.5 delay:1 options:0 animations:^{
+		splashView.alpha = 0;
+		splashView.frame = frame;
+	} completion:^(BOOL finished) {
+		[splashView removeFromSuperview];
+	}];
+}
 
 - (void)disableButtons
 {
@@ -739,7 +854,7 @@ static const CGFloat yCoords[] = {7, 101, 195, 289};
 	else
 	{
 		// iPhone: enumerate subviews in mainscroller
-		for( UIView *subview in mainScroller.subviews )
+		for( UIView *subview in _mainScroller.subviews )
 			if( [subview isKindOfClass:[UIButton class]] )
 				[(UIButton*)subview setEnabled:NO];
 	}
@@ -761,7 +876,7 @@ static const CGFloat yCoords[] = {7, 101, 195, 289};
 	else
 	{
 		// iPhone: enumerate subviews of mainscroller and enable all buttons
-		for( UIView *subview in mainScroller.subviews )
+		for( UIView *subview in _mainScroller.subviews )
 			if( [subview isKindOfClass:[UIButton class]] )
 				[(UIButton*)subview setEnabled:YES];
 	}
@@ -769,19 +884,33 @@ static const CGFloat yCoords[] = {7, 101, 195, 289};
 
 - (void)setCurrentButtonsView:(UIView*)currentButtonsView
 {
-	// Remove old buttons view
-	/// TEMP: fancy animation here!
-	[_currentButtonsView removeFromSuperview];
+	// Do nothing if we're already showing this view
+	if( _currentButtonsView == currentButtonsView )
+		return;
+	
+	// Remember the current view so we can animate it
+	UIView *oldButtonsView = _currentButtonsView;
 	
 	// Update ivar
 	_currentButtonsView = currentButtonsView;
 	
 	// Add and fade in new buttons view
+	CGAffineTransform transform = CGAffineTransformMakeScale( 0.1, 0.1 );
 	_currentButtonsView.alpha = 0;
-	[self.view insertSubview:_currentButtonsView belowSubview:debugView];
+	_currentButtonsView.transform = transform;
+	[self.contentView addSubview:_currentButtonsView];
 	[UIView animateWithDuration:0.3f animations:^{
 		_currentButtonsView.alpha = 1;
+		_currentButtonsView.transform = CGAffineTransformIdentity;
+		
+		oldButtonsView.transform = transform;
+		oldButtonsView.alpha = 0;
+	} completion:^(BOOL finished) {
+		[oldButtonsView removeFromSuperview];
 	}];
+	
+	// Dismiss popover controller if visible
+	[_popover dismissPopoverAnimated:YES];
 }
 
 - (IBAction)scanAction:(id)sender
@@ -802,18 +931,21 @@ static const CGFloat yCoords[] = {7, 101, 195, 289};
 	
 	// Start scanning - we're only looking for devices with the "Generic Command and Control Protocol" service
 	[self print:@"Start scanning..."];
-	scanTimer = [NSTimer scheduledTimerWithTimeInterval:2.0f target:self selector:@selector(scanTimeout:) userInfo:nil repeats:NO];
+//	scanTimer = [NSTimer scheduledTimerWithTimeInterval:2.0f target:self selector:@selector(scanTimeout:) userInfo:nil repeats:NO];
+	scanTimer = [NSTimer timerWithTimeInterval:2.0f target:self selector:@selector(scanTimeout:) userInfo:nil repeats:NO];
+	[[NSRunLoop mainRunLoop] addTimer:scanTimer forMode:NSRunLoopCommonModes];
+	
 	[centralManager scanForPeripheralsWithServices:[NSArray arrayWithObject:[CBUUID UUIDWithString:UUID_GCAC_SERVICE]] options:0];
 	
 	// Set toolbar items
-	if( [toolbarItems containsObject:learnButton] )
+	if( [toolbarItems containsObject:_learnButton] )
 	{
-		[toolbarItems insertObject:scanButton atIndex:[toolbarItems indexOfObject:learnButton]];
-		[toolbarItems removeObject:learnButton];
+		[toolbarItems insertObject:_scanButton atIndex:[toolbarItems indexOfObject:_learnButton]];
+		[toolbarItems removeObject:_learnButton];
 	}
 
-	scanButton.enabled = NO;
-	[toolbar setItems:toolbarItems animated:YES];
+	_scanButton.enabled = NO;
+	[_toolbar setItems:toolbarItems animated:YES];
 }
 
 - (IBAction)disconnectAction:(id)sender
@@ -830,7 +962,7 @@ static const CGFloat yCoords[] = {7, 101, 195, 289};
 
 - (IBAction)clearAction:(id)sender
 {
-	textView.text = @"";
+	_textView.text = @"";
 }
 
 - (IBAction)forgetPreferredAction:(id)sender
@@ -853,6 +985,23 @@ static const CGFloat yCoords[] = {7, 101, 195, 289};
 
 - (IBAction)learn:(id)sender
 {
+	// Animate red shadow
+	/// Do this on the buttons – maybe smaller radius/offset
+	_toolbar.layer.shadowColor = [UIColor redColor].CGColor;
+	_toolbar.layer.shadowRadius = 40;
+	_toolbar.layer.shadowOffset = CGSizeMake( 0, 22 );
+	
+	CABasicAnimation *anim = [CABasicAnimation animationWithKeyPath:@"shadowOpacity"];
+    anim.fromValue = [NSNumber numberWithFloat:0.0];
+    anim.toValue = [NSNumber numberWithFloat:0.85f];
+    anim.duration = 1.0;
+	anim.autoreverses = YES;
+	anim.repeatCount = MAXFLOAT;	// I.e. infinite
+    [_toolbar.layer addAnimation:anim forKey:@"shadowOpacity"];
+
+	/// Also change toolbar's background and title attributes
+	/// …
+	
 	// Toggle recording
 	learning = !learning;
 	
@@ -876,8 +1025,8 @@ static const CGFloat yCoords[] = {7, 101, 195, 289};
 					}
 					else 
 					{
-						[button setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
-						[button setTitleShadowColor:[UIColor whiteColor] forState:UIControlStateNormal];
+						[button setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
+						[button setTitleShadowColor:[UIColor blackColor] forState:UIControlStateNormal];
 					}
 				}
 			}
@@ -886,7 +1035,7 @@ static const CGFloat yCoords[] = {7, 101, 195, 289};
 	else
 	{
 		// iPhone: use mainScroller
-		[mainScroller.subviews enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+		[_mainScroller.subviews enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
 			if( [obj isKindOfClass:[UIButton class]] )
 			{
 				UIButton *button = (UIButton*)obj;	// Typecast
@@ -897,8 +1046,8 @@ static const CGFloat yCoords[] = {7, 101, 195, 289};
 				}
 				else 
 				{
-					[button setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
-					[button setTitleShadowColor:[UIColor whiteColor] forState:UIControlStateNormal];
+					[button setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
+					[button setTitleShadowColor:[UIColor blackColor] forState:UIControlStateNormal];
 				}
 			}
 		}];
@@ -908,20 +1057,20 @@ static const CGFloat yCoords[] = {7, 101, 195, 289};
 - (IBAction)toggleDebugAction:(id)sender
 {
 	// Is the debugging view already visible?
-	if( debugView.frame.origin.y < self.view.bounds.size.height )
+	if( _debugView.frame.origin.y < self.view.bounds.size.height )
 	{
 		// Yes: hide it
-		CGRect frame = debugView.frame;
+		CGRect frame = _debugView.frame;
 		frame.origin.y = self.view.bounds.size.height;
 		
 		[UIView animateWithDuration:0.3 animations:^{
-			debugView.frame = frame;
+			_debugView.frame = frame;
 		}];
 	}
 	else
 	{
 		// No: show it
-		CGRect frame = debugView.frame;
+		CGRect frame = _debugView.frame;
 		frame.origin.y = self.view.bounds.size.height - frame.size.height;
 		
 		// Weirdness happens here…
@@ -930,13 +1079,13 @@ static const CGFloat yCoords[] = {7, 101, 195, 289};
 		// See http://stackoverflow.com/questions/7738666/uitextview-doesnt-show-until-it-is-scrolled
 		// Therefore, we clear the text and set it again. Dangit, that should not be necessary!
 		DEBUG_LOG( @"Performing ugly hack..." );
-		NSString *tmpText = textView.text;
-		textView.text = @"";
-		textView.text = tmpText;
-		[textView scrollRangeToVisible:NSMakeRange( [textView.text length]-1, 1 )];
+		NSString *tmpText = _textView.text;
+		_textView.text = @"";
+		_textView.text = tmpText;
+		[_textView scrollRangeToVisible:NSMakeRange( [_textView.text length]-1, 1 )];
 
 		[UIView animateWithDuration:0.3 animations:^{
-			debugView.frame = frame;
+			_debugView.frame = frame;
 		}];
 	}
 }
@@ -961,7 +1110,7 @@ static const CGFloat yCoords[] = {7, 101, 195, 289};
 	else
 	{
 		// iPhone: get first button in mainScroller
-		for( UIView *subview in mainScroller.subviews )
+		for( UIView *subview in _mainScroller.subviews )
 		{
 			if( [subview isKindOfClass:[UIButton class]] )
 			{
@@ -977,24 +1126,24 @@ static const CGFloat yCoords[] = {7, 101, 195, 289};
 		[self disableButtons];
 		
 		// Set toolbar items
-		if( [toolbarItems containsObject:learnButton] )
+		if( [toolbarItems containsObject:_learnButton] )
 		{
-			[toolbarItems insertObject:scanButton atIndex:[toolbarItems indexOfObject:learnButton]];
-			[toolbarItems removeObject:learnButton];
+			[toolbarItems insertObject:_scanButton atIndex:[toolbarItems indexOfObject:_learnButton]];
+			[toolbarItems removeObject:_learnButton];
 		}
-		[toolbar setItems:toolbarItems animated:YES];
+		[_toolbar setItems:toolbarItems animated:YES];
 	}
 	else 
 	{
 		[self enableButtons];
 		
 		// Set toolbar items
-		if( [toolbarItems containsObject:scanButton] )
+		if( [toolbarItems containsObject:_scanButton] )
 		{
-			[toolbarItems insertObject:learnButton atIndex:[toolbarItems indexOfObject:scanButton]];
-			[toolbarItems removeObject:scanButton];
+			[toolbarItems insertObject:_learnButton atIndex:[toolbarItems indexOfObject:_scanButton]];
+			[toolbarItems removeObject:_scanButton];
 		}
-		[toolbar setItems:toolbarItems animated:YES];
+		[_toolbar setItems:toolbarItems animated:YES];
 	}
 }
 

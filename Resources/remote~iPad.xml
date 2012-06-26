@@ -1,0 +1,64 @@
+<?xml version="1.0"?>
+<config>
+	<!-- For large buttons the available colors are: purple, yellow, pink, green, red, orange, blue -->
+	<page name="TV" layout="large_buttons" >
+		<row>
+			<button id="1" color="green" image="icn_arrow_up" />
+			<button id="2" color="orange" image="icn_vol_up" mode="repeat" />
+			<button id="3" color="red" image="icn_power" />
+		</row>
+		<row>
+			<button id="4" color="green" image="icn_arrow_down" />
+			<button id="5" color="orange" image="icn_vol_down" mode="repeat" />
+			<button id="6" />
+		</row>
+		<row>
+			<button id="7" color="green" text="PREV" />
+			<button id="8" color="orange" image="icn_mute" />
+			<button id="33" color="yellow" text="INFO" />
+		</row>
+	</page>
+	
+	<!-- For medium buttons the available colors are: black, gray, pink, blue, purple, red, green, lightblue, turquoise, yellow, orange, lime -->
+	<page name="Channels" layout="medium_buttons">
+		<row>
+			<button id="13" color="lightblue" text="1" />
+			<button id="14" color="lightblue" text="2" />
+			<button id="15" color="lightblue" text="3" />
+		</row>
+		<row>
+			<button id="16" color="lightblue" text="4" />
+			<button id="17" color="lightblue" text="5" />
+			<button id="18" color="lightblue" text="6" />
+		</row>
+		<row>
+			<button id="19" color="lightblue" text="7" />
+			<button id="20" color="lightblue" text="8" />
+			<button id="21" color="lightblue" text="9" />
+		</row>
+		<row>
+			<button id="22" />
+			<button id="23" color="lightblue" text="0" />
+			<button id="24" />
+		</row>
+	</page>
+
+	<page name="Guide" layout="large_buttons" >
+		<row>
+			<button id="25" />
+			<button id="26" color="blue" image="icn_arrow_up" />
+			<button id="27" />
+		</row>
+		<row>
+			<button id="28" color="blue" image="icn_arrow_left" />
+			<button id="29" color="blue" image="icn_dot" />
+			<button id="30" color="blue" image="icn_arrow_right" />
+		</row>
+		<row>
+			<button id="31" color="yellow" text="GUIDE" />
+			<button id="32" color="blue" image="icn_arrow_down" />
+			<button id="33" color="yellow" text="INFO" />
+		</row>
+	</page>
+
+</config>

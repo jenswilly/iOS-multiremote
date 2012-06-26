@@ -5,36 +5,36 @@
 	<key>medium_buttons</key>
 	<dict>
 		<key>initialX</key>
-		<integer>216</integer>
+		<integer>88</integer>
 		<key>initialY</key>
-		<integer>7</integer>
+		<integer>0</integer>
 		<key>stepX</key>
-		<integer>93</integer>
+		<integer>176</integer>
 		<key>stepY</key>
-		<integer>94</integer>
+		<integer>176</integer>
 		<key>columns</key>
 		<integer>3</integer>
 		<key>rows</key>
 		<integer>4</integer>
 		<key>filenameFormat</key>
-		<string>btn_%@.png</string>
+		<string>btn_%@~iPad</string>
 	</dict>
 	<key>large_buttons</key>
 	<dict>
 		<key>initialX</key>
-		<integer>0</integer>
+		<integer>1</integer>
 		<key>initialY</key>
-		<integer>31</integer>
+		<integer>1</integer>
 		<key>stepX</key>
-		<integer>107</integer>
+		<integer>234</integer>
 		<key>stepY</key>
-		<integer>107</integer>
+		<integer>234</integer>
 		<key>columns</key>
 		<integer>3</integer>
 		<key>rows</key>
 		<integer>3</integer>
 		<key>filenameFormat</key>
-		<string>btn_large_%@.png</string>
+		<string>btn_large_%@~iPad</string>
 	</dict>
 </dict>
 </plist>

@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="2.0" toolsVersion="2541" systemVersion="11E53" targetRuntime="iOS.CocoaTouch.iPad" propertyAccessControl="none" initialViewController="Edr-Y2-owp">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="1.1" toolsVersion="2182" systemVersion="11E53" targetRuntime="iOS.CocoaTouch.iPad" propertyAccessControl="none" initialViewController="Edr-Y2-owp">
     <dependencies>
-        <deployment defaultVersion="1536" identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="1875"/>
+        <deployment defaultVersion="1296" identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="1181"/>
     </dependencies>
     <scenes>
         <!--Main View Controller-->
@@ -13,6 +13,18 @@
                         <rect key="frame" x="0.0" y="20" width="768" height="1004"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                         <subviews>
+                            <view contentMode="scaleToFill" id="Nxu-Cf-0G0">
+                                <rect key="frame" x="0.0" y="44" width="768" height="960"/>
+                                <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                <subviews>
+                                    <view contentMode="scaleToFill" id="Csd-bP-dMJ">
+                                        <rect key="frame" x="32" y="128" width="704" height="704"/>
+                                        <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxX="YES" flexibleMinY="YES" flexibleMaxY="YES"/>
+                                        <color key="backgroundColor" red="0.031372549020000001" green="0.094117647060000004" blue="0.42745098040000001" alpha="0.0" colorSpace="calibratedRGB"/>
+                                    </view>
+                                </subviews>
+                                <color key="backgroundColor" red="0.031372549020000001" green="0.094117647060000004" blue="0.42745098040000001" alpha="0.0" colorSpace="calibratedRGB"/>
+                            </view>
                             <view contentMode="scaleToFill" id="NT6-ty-m6K" userLabel="debugView">
                                 <rect key="frame" x="0.0" y="1004" width="768" height="400"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES"/>
@@ -21,9 +33,9 @@
                                         <rect key="frame" x="0.0" y="0.0" width="768" height="400"/>
                                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                         <color key="backgroundColor" red="0.0" green="0.5" blue="1" alpha="1" colorSpace="calibratedRGB"/>
-                                        <textInputTraits key="textInputTraits" autocapitalizationType="sentences"/>
                                         <color key="textColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                         <fontDescription key="fontDescription" type="system" pointSize="12"/>
+                                        <textInputTraits key="textInputTraits" autocapitalizationType="sentences"/>
                                     </textView>
                                     <button opaque="NO" alpha="0.5" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" id="pDl-sl-iz7">
                                         <rect key="frame" x="712" y="6" width="49" height="18"/>
@@ -68,17 +80,17 @@
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxY="YES"/>
                                 <items>
                                     <barButtonItem style="plain" systemItem="flexibleSpace" id="rbh-4v-MIn"/>
-                                    <barButtonItem id="yvW-9P-WTl">
+                                    <barButtonItem image="barbtn_record.png" id="yvW-9P-WTl">
                                         <connections>
                                             <action selector="learn:" destination="5H9-G8-GMg" id="sGs-BH-kYz"/>
                                         </connections>
                                     </barButtonItem>
-                                    <barButtonItem id="cR7-0a-kau">
+                                    <barButtonItem image="barbtn_scan.png" id="cR7-0a-kau">
                                         <connections>
                                             <action selector="scanAction:" destination="5H9-G8-GMg" id="A2o-yU-9ng"/>
                                         </connections>
                                     </barButtonItem>
-                                    <barButtonItem id="Bfv-TG-9Jh">
+                                    <barButtonItem image="barbtn_debug.png" id="Bfv-TG-9Jh">
                                         <connections>
                                             <action selector="toggleDebugAction:" destination="5H9-G8-GMg" id="MDY-S9-yPQ"/>
                                         </connections>
@@ -90,6 +102,7 @@
                     </view>
                     <toolbarItems/>
                     <connections>
+                        <outlet property="contentView" destination="Csd-bP-dMJ" id="bed-pC-6id"/>
                         <outlet property="debugButton" destination="Bfv-TG-9Jh" id="a3u-fH-o3O"/>
                         <outlet property="debugView" destination="NT6-ty-m6K" id="WAW-EG-VVU"/>
                         <outlet property="flexSpace" destination="rbh-4v-MIn" id="xjA-0Q-6P9"/>
@@ -119,12 +132,12 @@
                                     <rect key="frame" x="0.0" y="0.0" width="320" height="79"/>
                                     <autoresizingMask key="autoresizingMask"/>
                                     <subviews>
-                                        <label opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="left" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" text="Title" adjustsFontSizeToFit="NO" autoshrinkMode="none" id="fTN-jq-YXy">
+                                        <label opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="left" text="Title" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="fTN-jq-YXy">
                                             <rect key="frame" x="60" y="0.0" width="250" height="79"/>
                                             <autoresizingMask key="autoresizingMask"/>
-                                            <color key="highlightedColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
-                                            <color key="textColor" red="0.87843137250000003" green="0.87058823529999996" blue="0.84705882349999995" alpha="1" colorSpace="calibratedRGB"/>
                                             <fontDescription key="fontDescription" type="boldSystem" pointSize="20"/>
+                                            <color key="textColor" red="0.87843137250000003" green="0.87058823529999996" blue="0.84705882349999995" alpha="1" colorSpace="calibratedRGB"/>
+                                            <color key="highlightedColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
                                         </label>
                                         <imageView opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" image="orb_gray.png" id="y9s-Mq-gFO">
                                             <rect key="frame" x="10" y="19" width="40" height="40"/>
@@ -181,8 +194,45 @@
         </scene>
     </scenes>
     <resources>
+        <image name="barbtn_debug.png" width="20" height="16"/>
+        <image name="barbtn_record.png" width="16" height="15"/>
+        <image name="barbtn_scan.png" width="18" height="20"/>
         <image name="orb_gray.png" width="40" height="40"/>
     </resources>
+    <classes>
+        <class className="MainViewController" superclassName="UIViewController">
+            <source key="sourceIdentifier" type="project" relativePath="./Classes/MainViewController.h"/>
+            <relationships>
+                <relationship kind="action" name="clearAction:"/>
+                <relationship kind="action" name="debug1Action:"/>
+                <relationship kind="action" name="disconnectAction:"/>
+                <relationship kind="action" name="forgetPreferredAction:"/>
+                <relationship kind="action" name="learn:"/>
+                <relationship kind="action" name="readAction:"/>
+                <relationship kind="action" name="scanAction:"/>
+                <relationship kind="action" name="sendLearnAction:"/>
+                <relationship kind="action" name="sendTAction:"/>
+                <relationship kind="action" name="sendYAction:"/>
+                <relationship kind="action" name="toggleDebugAction:"/>
+                <relationship kind="outlet" name="contentView" candidateClass="UIView"/>
+                <relationship kind="outlet" name="debugButton" candidateClass="UIBarButtonItem"/>
+                <relationship kind="outlet" name="debugView" candidateClass="UIView"/>
+                <relationship kind="outlet" name="flexSpace" candidateClass="UIBarButtonItem"/>
+                <relationship kind="outlet" name="learnButton" candidateClass="UIBarButtonItem"/>
+                <relationship kind="outlet" name="mainScroller" candidateClass="UIScrollView"/>
+                <relationship kind="outlet" name="pageLabelScroller" candidateClass="UIScrollView"/>
+                <relationship kind="outlet" name="scanButton" candidateClass="UIBarButtonItem"/>
+                <relationship kind="outlet" name="textView" candidateClass="UITextView"/>
+                <relationship kind="outlet" name="toolbar" candidateClass="UIToolbar"/>
+            </relationships>
+        </class>
+        <class className="PageCell" superclassName="UITableViewCell">
+            <source key="sourceIdentifier" type="project" relativePath="./Classes/PageCell.h"/>
+        </class>
+        <class className="PageListViewController" superclassName="UITableViewController">
+            <source key="sourceIdentifier" type="project" relativePath="./Classes/PageListViewController.h"/>
+        </class>
+    </classes>
     <simulatedMetricsContainer key="defaultSimulatedMetrics">
         <simulatedStatusBarMetrics key="statusBar" statusBarStyle="blackTranslucent"/>
         <simulatedOrientationMetrics key="orientation"/>
