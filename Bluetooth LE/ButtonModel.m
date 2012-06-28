@@ -7,6 +7,7 @@
 //
 
 #import "ButtonModel.h"
+#import <QuartzCore/QuartzCore.h>
 
 @implementation ButtonModel
 @synthesize text, color, image, number, mode;
@@ -70,6 +71,7 @@
 		[btn setImage:self.image forState:UIControlStateNormal];
 	}
 	
+	// Set tag to command index
 	btn.tag = self.number;
 	if( self.mode == ButtonModeTouchDown )
 		[btn addTarget:delegate action:@selector(sendCommandAction:) forControlEvents:UIControlEventTouchDown];
@@ -82,6 +84,11 @@
 	else	// TouchUp
 		[btn addTarget:delegate action:@selector(sendCommandAction:) forControlEvents:UIControlEventTouchUpInside];
 	
+	// Configure shadow. The shadow opacity is initially set to 0 but will be shown then learning.
+	btn.layer.shadowColor = [UIColor redColor].CGColor;
+	btn.layer.shadowRadius = 20.0f;
+	btn.layer.shadowOffset = CGSizeZero;
+
 	return btn;
 }
 

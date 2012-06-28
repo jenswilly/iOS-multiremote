@@ -80,22 +80,11 @@ static const CGFloat yCoords[] = {7, 101, 195, 289};
 	// Disable all buttons requiring a connection
 	[self disableButtons];
 	
-	/*
-	// Pulsing red light when learning
-	self.view.layer.shadowOpacity = 0.0;
-	
-	// Prepare round red shadow for pulsing red light
-	float btnWidth = self.view.frame.size.width;
-	float btnHeight = self.view.frame.size.height;
-	float shadowWidth = SHADOW_RADIUS * btnWidth;
-	float shadowHeight = SHADOW_RADIUS * btnHeight;
-	CGPathRef shadowPath = [UIBezierPath bezierPathWithOvalInRect:CGRectMake( 0, 0, shadowWidth, shadowHeight)].CGPath;
-	self.view.layer.shadowOffset = CGSizeMake(- (shadowWidth - btnWidth) * 0.5, - (shadowHeight - btnHeight) * 0.5);
-	self.view.layer.shadowRadius = btnWidth / 4;
-	self.view.layer.shadowOpacity = 0.0;
-	self.view.layer.shadowColor = [UIColor redColor].CGColor;
-	self.view.layer.shadowPath = shadowPath;
-	 */
+	// Setup shadow properties for the toolbar
+	_toolbar.layer.shadowColor = [UIColor redColor].CGColor;
+	_toolbar.layer.shadowRadius = 40;
+	_toolbar.layer.shadowOffset = CGSizeMake( 0, 22 );
+	_toolbar.layer.shadowOpacity = 0.0f;
 	
 	commandMode = CommandModeIdle;
 }
@@ -408,7 +397,7 @@ static const CGFloat yCoords[] = {7, 101, 195, 289};
 			[self print:@"Found GCAC service"];
 			
 			// Find characteristics from GCAC service
-			[connectedPeripheral discoverCharacteristics:[NSArray arrayWithObjects:[CBUUID UUIDWithString:UUID_COMMAND_CHARATERISTIC], [CBUUID UUIDWithString:UUID_RESPONSE_CHARACTERISTIC], nil] forService:service];
+			[connectedPeripheral discoverCharacteristics:[NSArray arrayWithObject:[CBUUID UUIDWithString:UUID_COMMAND_CHARATERISTIC]] forService:service];
 		}
 	}
 }
@@ -440,6 +429,7 @@ static const CGFloat yCoords[] = {7, 101, 195, 289};
 				// Set toolbar items
 				[_toolbar setItems:[NSArray arrayWithObjects:_debugButton, _flexSpace, _learnButton, nil] animated:YES];
 			}
+			/* -- We don't care about the response characteristic right now
 			else if( [characteristic.UUID isEqualToUUIDString:UUID_RESPONSE_CHARACTERISTIC] )
 			{
 				[self print:@"Found response characteristic"];
@@ -448,6 +438,7 @@ static const CGFloat yCoords[] = {7, 101, 195, 289};
 				// Enable notifications for response characteristic
 				[peripheral setNotifyValue:YES forCharacteristic:characteristic];
 			}
+			 */
 		}
 	}
 }
@@ -985,26 +976,28 @@ static const CGFloat yCoords[] = {7, 101, 195, 289};
 
 - (IBAction)learn:(id)sender
 {
-	// Animate red shadow
-	/// Do this on the buttons – maybe smaller radius/offset
-	_toolbar.layer.shadowColor = [UIColor redColor].CGColor;
-	_toolbar.layer.shadowRadius = 40;
-	_toolbar.layer.shadowOffset = CGSizeMake( 0, 22 );
+	// Toggle recording
+	learning = !learning;
 	
+	// Create fade-up/fade-down animation to be shown on toolbar and buttons
 	CABasicAnimation *anim = [CABasicAnimation animationWithKeyPath:@"shadowOpacity"];
     anim.fromValue = [NSNumber numberWithFloat:0.0];
     anim.toValue = [NSNumber numberWithFloat:0.85f];
     anim.duration = 1.0;
 	anim.autoreverses = YES;
 	anim.repeatCount = MAXFLOAT;	// I.e. infinite
-    [_toolbar.layer addAnimation:anim forKey:@"shadowOpacity"];
+	
+	// Are we learnign?
+	if( learning )
+		// Yes: add shadow animation
+		[_toolbar.layer addAnimation:anim forKey:@"shadowOpacity"];
+	else 
+	{
+		// No: remove animation
+		[_toolbar.layer removeAllAnimations];
+		_toolbar.layer.shadowOpacity = 0.0f;
+	}
 
-	/// Also change toolbar's background and title attributes
-	/// …
-	
-	// Toggle recording
-	learning = !learning;
-	
 	// Change font color on all buttons
 	// iPhone or iPad?
 	if( UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad )
@@ -1022,35 +1015,49 @@ static const CGFloat yCoords[] = {7, 101, 195, 289};
 					{
 						[button setTitleColor:[UIColor redColor] forState:UIControlStateNormal];
 						[button setTitleShadowColor:[UIColor whiteColor] forState:UIControlStateNormal];
+						
+						// Start shadow animation
+						[button.layer addAnimation:anim forKey:@"shadowOpacity"];
 					}
 					else 
 					{
 						[button setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
 						[button setTitleShadowColor:[UIColor blackColor] forState:UIControlStateNormal];
+						
+						// Stop animation
+						[button.layer removeAllAnimations];
+						button.layer.shadowOpacity = 0.0f;
 					}
 				}
-			}
-		}
+			}	// end-for: subviews
+		}	// end-for: [pageContent allValues]
 	}
 	else
 	{
 		// iPhone: use mainScroller
-		[_mainScroller.subviews enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
-			if( [obj isKindOfClass:[UIButton class]] )
+		for( UIView *subview in _mainScroller.subviews )
+		{		
+			if( [subview isKindOfClass:[UIButton class]] )
 			{
-				UIButton *button = (UIButton*)obj;	// Typecast
+				UIButton *button = (UIButton*)subview;	// Typecast for your convenience
 				if( learning )
 				{
 					[button setTitleColor:[UIColor redColor] forState:UIControlStateNormal];
 					[button setTitleShadowColor:[UIColor whiteColor] forState:UIControlStateNormal];
+					
+					// Show shadow. Performance is not good enough for animation
+					button.layer.shadowOpacity = 0.85f;
 				}
 				else 
 				{
 					[button setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
 					[button setTitleShadowColor:[UIColor blackColor] forState:UIControlStateNormal];
+					
+					// Hide shadow
+					button.layer.shadowOpacity = 0.0f;
 				}
 			}
-		}];
+		}	// end-for: _mainScroller.subviews
 	}
 }
 
