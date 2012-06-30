@@ -19,7 +19,7 @@
 		</row>
 	</page>
 	
-	<!-- For medium buttons the available colors are: black, gray, pink, blue, purple, red, green, lightblue, turquoise, yellow, orange, lime -->
+	<!-- For iPad, medium buttons the available colors are: lightblue, yellow, lime -->
 	<page name="Channels" layout="medium_buttons">
 		<row>
 			<button id="13" color="lightblue" text="1" />
@@ -37,9 +37,9 @@
 			<button id="21" color="lightblue" text="9" />
 		</row>
 		<row>
-			<button id="22" />
+			<button id="22" color="lime" text="NOOP" />
 			<button id="23" color="lightblue" text="0" />
-			<button id="24" />
+			<button id="24" color="lime" text="TEST" />
 		</row>
 	</page>
 

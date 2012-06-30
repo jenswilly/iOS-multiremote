@@ -85,7 +85,7 @@
                                             <action selector="learn:" destination="5H9-G8-GMg" id="sGs-BH-kYz"/>
                                         </connections>
                                     </barButtonItem>
-                                    <barButtonItem image="barbtn_scan.png" id="cR7-0a-kau">
+                                    <barButtonItem image="barbtn_lightning.png" id="cR7-0a-kau">
                                         <connections>
                                             <action selector="scanAction:" destination="5H9-G8-GMg" id="A2o-yU-9ng"/>
                                         </connections>
@@ -102,12 +102,12 @@
                     </view>
                     <toolbarItems/>
                     <connections>
+                        <outlet property="connectButton" destination="cR7-0a-kau" id="nRm-v8-hgI"/>
                         <outlet property="contentView" destination="Csd-bP-dMJ" id="bed-pC-6id"/>
                         <outlet property="debugButton" destination="Bfv-TG-9Jh" id="a3u-fH-o3O"/>
                         <outlet property="debugView" destination="NT6-ty-m6K" id="WAW-EG-VVU"/>
                         <outlet property="flexSpace" destination="rbh-4v-MIn" id="xjA-0Q-6P9"/>
                         <outlet property="learnButton" destination="yvW-9P-WTl" id="cSJ-vS-vND"/>
-                        <outlet property="scanButton" destination="cR7-0a-kau" id="N6f-bP-dhW"/>
                         <outlet property="textView" destination="LVn-Hy-2RM" id="r8d-yx-F8P"/>
                         <outlet property="toolbar" destination="mqG-lo-KDq" id="glR-6u-TZd"/>
                     </connections>
@@ -195,8 +195,8 @@
     </scenes>
     <resources>
         <image name="barbtn_debug.png" width="20" height="16"/>
+        <image name="barbtn_lightning.png" width="10" height="20"/>
         <image name="barbtn_record.png" width="16" height="15"/>
-        <image name="barbtn_scan.png" width="18" height="20"/>
         <image name="orb_gray.png" width="40" height="40"/>
     </resources>
     <classes>
@@ -214,6 +214,7 @@
                 <relationship kind="action" name="sendTAction:"/>
                 <relationship kind="action" name="sendYAction:"/>
                 <relationship kind="action" name="toggleDebugAction:"/>
+                <relationship kind="outlet" name="connectButton" candidateClass="UIBarButtonItem"/>
                 <relationship kind="outlet" name="contentView" candidateClass="UIView"/>
                 <relationship kind="outlet" name="debugButton" candidateClass="UIBarButtonItem"/>
                 <relationship kind="outlet" name="debugView" candidateClass="UIView"/>
@@ -221,7 +222,6 @@
                 <relationship kind="outlet" name="learnButton" candidateClass="UIBarButtonItem"/>
                 <relationship kind="outlet" name="mainScroller" candidateClass="UIScrollView"/>
                 <relationship kind="outlet" name="pageLabelScroller" candidateClass="UIScrollView"/>
-                <relationship kind="outlet" name="scanButton" candidateClass="UIBarButtonItem"/>
                 <relationship kind="outlet" name="textView" candidateClass="UITextView"/>
                 <relationship kind="outlet" name="toolbar" candidateClass="UIToolbar"/>
             </relationships>

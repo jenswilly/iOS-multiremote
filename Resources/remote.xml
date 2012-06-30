@@ -38,7 +38,7 @@
 		<row>
 			<button id="22" />
 			<button id="23" color="lightblue" text="0" />
-			<button id="24" />
+			<button id="24" color="lime" text="TEST" />
 		</row>
 	</page>
 	

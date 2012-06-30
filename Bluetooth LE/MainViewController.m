@@ -20,6 +20,8 @@
 
 #define COMMAND_NUMBER @"commandNumber"
 
+#define SCAN_TIMEOUT 2.0f	// Timeout value for scanning
+
 // Coordinates for buttons
 static const CGFloat xCoords[] = {24, 117, 210};
 static const CGFloat yCoords[] = {7, 101, 195, 289};
@@ -29,7 +31,7 @@ static const CGFloat yCoords[] = {7, 101, 195, 289};
 @synthesize centralManager, peripherals, connectedPeripheral, GCACService, GCACCommandCharacteristic, GCACResponseCharacteristic, peripheralNames, pages, pageContent, masterViewController, currentButtonsView = _currentButtonsView, currentPageName;
 @synthesize learnButton = _learnButton;
 @synthesize debugButton = _debugButton;
-@synthesize scanButton = _scanButton;
+@synthesize connectButton = _connectButton;
 @synthesize flexSpace = _flexSpace;
 @synthesize toolbar = _toolbar;
 @synthesize pageLabelScroller = _pageLabelScroller;
@@ -65,8 +67,7 @@ static const CGFloat yCoords[] = {7, 101, 195, 289};
     [audioPlayer prepareToPlay];
 	
 	// Set toolbar items
-	toolbarItems = [NSMutableArray arrayWithObjects:_flexSpace, _scanButton, _debugButton, nil];
-	[_toolbar setItems:toolbarItems animated:YES];
+	_learnButton.enabled = NO;
 	 
 	// Load xml
 	// iPhone or iPad?
@@ -95,7 +96,7 @@ static const CGFloat yCoords[] = {7, 101, 195, 289};
     [self setDebugView:nil];
 	[self setLearnButton:nil];
 	[self setDebugButton:nil];
-	[self setScanButton:nil];
+	[self setConnectButton:nil];
 	[self setMainScroller:nil];
 	[self setFlexSpace:nil];
 	[self setToolbar:nil];
@@ -108,15 +109,11 @@ static const CGFloat yCoords[] = {7, 101, 195, 289};
 {
 	// iPhone or iPad?
 	if( UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad )
-	{
 		// All orientations supported for iPad
 		return YES;
-	}
 	else
-	{
 		// iPhone supports only portrait orientations
 		return UIInterfaceOrientationIsPortrait( interfaceOrientation );
-	}
 }
 
 #pragma mark - UIScrollViewDelegate methods
@@ -164,9 +161,13 @@ static const CGFloat yCoords[] = {7, 101, 195, 289};
 
 - (void)print:(NSString *)text
 {
-	DEBUG_LOG( @"--> %@", text );
+	NSMutableString *debugString = [text mutableCopy];
+	if( ![NSThread currentThread].isMainThread )
+		[debugString appendString:@" [THREAD!]"];
+		 
+	DEBUG_LOG( @"--> %@", debugString );
 #if DEBUG
-	_textView.text = [_textView.text stringByAppendingFormat:@"\r%@", text];
+	_textView.text = [_textView.text stringByAppendingFormat:@"\r%@", debugString];
 	[_textView scrollRangeToVisible:NSMakeRange( [_textView.text length]-1, 1 )];
 #endif
 }
@@ -186,7 +187,7 @@ static const CGFloat yCoords[] = {7, 101, 195, 289};
 		/// BUG: iOS 6 fix
 		UIActionSheet *actionSheet = [[UIActionSheet alloc] initWithTitle:@"Connect to device" delegate:self cancelButtonTitle:@"Cancel" destructiveButtonTitle:nil otherButtonTitles:@"Device", nil];
 		
-		/// BUG: iOS 6 – can't add buttons in iOS 6 :(
+		/// BUG: iOS 6 – can't add buttons in iOS 6. Or is it iPad? :(
 		/*
 		UIActionSheet *actionSheet = [[UIActionSheet alloc] initWithTitle:@"Connect to device" delegate:self cancelButtonTitle:@"Cancel" destructiveButtonTitle:nil otherButtonTitles:@"Thing", nil];
 		
@@ -212,13 +213,9 @@ static const CGFloat yCoords[] = {7, 101, 195, 289};
 		[alert show];
 		
 		// Set last item of the toolbar to the scan button (enabled)
-		_scanButton.enabled = YES;
-		if( [toolbarItems containsObject:_learnButton] )
-		{
-			[toolbarItems insertObject:_scanButton atIndex:[toolbarItems indexOfObject:_learnButton]];
-			[toolbarItems removeObject:_learnButton];
-		}
-		[_toolbar setItems:toolbarItems animated:YES];
+		_learnButton.enabled = NO;
+		_connectButton.enabled = YES;
+		_connectButton.image = [UIImage imageNamed:@"barbtn_lightning"];
 	}
 }
 
@@ -240,16 +237,7 @@ static const CGFloat yCoords[] = {7, 101, 195, 289};
 	if( learning )
 	{
 		learning = NO;
-		
-		// Change font color on all buttons
-		[_mainScroller.subviews enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
-			if( [obj isKindOfClass:[UIButton class]] )
-			{
-				UIButton *button = (UIButton*)obj;	// Typecast
-				[button setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
-				[button setTitleShadowColor:[UIColor blackColor] forState:UIControlStateNormal];
-			}
-		}];
+		[self showLearningAnimation:learning];
 	}
 }
 
@@ -261,7 +249,7 @@ static const CGFloat yCoords[] = {7, 101, 195, 289};
 	if( buttonIndex == actionSheet.cancelButtonIndex )
 	{
 		// Yes: enable scan button and exit
-		_scanButton.enabled = YES;
+		_connectButton.enabled = YES;
 		return;
 	}
 	
@@ -309,7 +297,7 @@ static const CGFloat yCoords[] = {7, 101, 195, 289};
         case CBCentralManagerStatePoweredOn:
 			[self print:@"Core Bluetooth ready."];
 			// Start scanning if not connected
-			[self scanAction:nil];
+			[self performSelector:@selector(scanAction:) withObject:nil afterDelay:0.3f];
 			break;
     }
 }
@@ -366,7 +354,8 @@ static const CGFloat yCoords[] = {7, 101, 195, 289};
 	
 	// Disable all buttons requiring a connection
 	[self disableButtons];
-	[_toolbar setItems:[NSArray arrayWithObjects:_debugButton, _flexSpace, _scanButton, nil] animated:YES];
+	_learnButton.enabled = NO;
+	_connectButton.image = [UIImage imageNamed:@"barbtn_lightning"];
 }
 
 - (void)centralManager:(CBCentralManager *)central didFailToConnectPeripheral:(CBPeripheral *)peripheral error:(NSError *)error
@@ -427,7 +416,9 @@ static const CGFloat yCoords[] = {7, 101, 195, 289};
 				[self enableButtons];
 				
 				// Set toolbar items
-				[_toolbar setItems:[NSArray arrayWithObjects:_debugButton, _flexSpace, _learnButton, nil] animated:YES];
+				_learnButton.enabled = YES;
+				_connectButton.enabled = YES;
+				_connectButton.image = [UIImage imageNamed:@"barbtn_disconnect"];
 			}
 			/* -- We don't care about the response characteristic right now
 			else if( [characteristic.UUID isEqualToUUIDString:UUID_RESPONSE_CHARACTERISTIC] )
@@ -502,8 +493,8 @@ static const CGFloat yCoords[] = {7, 101, 195, 289};
 	[barButtonItem setImage:[UIImage imageNamed:@"barbtn_debug"]];
 
 	// Add the button to toolbar items array
-	[toolbarItems insertObject:barButtonItem atIndex:0];
-	[_toolbar setItems:toolbarItems animated:YES];
+	NSArray *items = [NSArray arrayWithObjects:barButtonItem, _flexSpace, _learnButton, _connectButton, _debugButton, nil];
+	[_toolbar setItems:items animated:YES];
 	
 	// Remember popover
 	self.popover = pc;
@@ -512,8 +503,8 @@ static const CGFloat yCoords[] = {7, 101, 195, 289};
 - (void)splitViewController:(UISplitViewController *)svc willShowViewController:(UIViewController *)aViewController invalidatingBarButtonItem:(UIBarButtonItem *)barButtonItem
 {
 	// Remove the bar button from toolbar items
-	[toolbarItems removeObject:barButtonItem];
-	[_toolbar setItems:toolbarItems animated:YES];
+	NSArray *items = [NSArray arrayWithObjects:_flexSpace, _learnButton, _connectButton, _debugButton, nil];
+	[_toolbar setItems:items animated:YES];
 }
 
 #pragma mark - ButtonModelDelegate methods
@@ -760,6 +751,90 @@ static const CGFloat yCoords[] = {7, 101, 195, 289};
 
 #pragma mark - Other methods
 
+- (void)showLearningAnimation:(BOOL)isLearning
+{
+	// Create fade-up/fade-down animation to be shown on toolbar and buttons
+	CABasicAnimation *anim = [CABasicAnimation animationWithKeyPath:@"shadowOpacity"];
+    anim.fromValue = [NSNumber numberWithFloat:0.0];
+    anim.toValue = [NSNumber numberWithFloat:0.85f];
+    anim.duration = 1.0;
+	anim.autoreverses = YES;
+	anim.repeatCount = MAXFLOAT;	// I.e. infinite
+	
+	// Are we learnign?
+	if( isLearning )
+		// Yes: add shadow animation
+		[_toolbar.layer addAnimation:anim forKey:@"shadowOpacity"];
+	else 
+	{
+		// No: remove animation
+		[_toolbar.layer removeAllAnimations];
+		_toolbar.layer.shadowOpacity = 0.0f;
+	}
+	
+	// Change font color on all buttons
+	// iPhone or iPad?
+	if( UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad )
+	{
+		// iPad: all pages
+		for( UIView *view in [pageContent allValues] )
+		{
+			// Individual buttons
+			for( UIView *subview in view.subviews )
+			{
+				if( [subview isKindOfClass:[UIButton class]] )
+				{
+					UIButton *button = (UIButton*)subview;	// Typecast
+					if( isLearning )
+					{
+						[button setTitleColor:[UIColor redColor] forState:UIControlStateNormal];
+						[button setTitleShadowColor:[UIColor whiteColor] forState:UIControlStateNormal];
+						
+						// Start shadow animation
+						[button.layer addAnimation:anim forKey:@"shadowOpacity"];
+					}
+					else 
+					{
+						[button setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
+						[button setTitleShadowColor:[UIColor blackColor] forState:UIControlStateNormal];
+						
+						// Stop animation
+						[button.layer removeAllAnimations];
+						button.layer.shadowOpacity = 0.0f;
+					}
+				}
+			}	// end-for: subviews
+		}	// end-for: [pageContent allValues]
+	}
+	else
+	{
+		// iPhone: use mainScroller
+		for( UIView *subview in _mainScroller.subviews )
+		{		
+			if( [subview isKindOfClass:[UIButton class]] )
+			{
+				UIButton *button = (UIButton*)subview;	// Typecast for your convenience
+				if( isLearning )
+				{
+					[button setTitleColor:[UIColor redColor] forState:UIControlStateNormal];
+					[button setTitleShadowColor:[UIColor whiteColor] forState:UIControlStateNormal];
+					
+					// Show shadow. Performance is not good enough for animation
+					button.layer.shadowOpacity = 0.85f;
+				}
+				else 
+				{
+					[button setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
+					[button setTitleShadowColor:[UIColor blackColor] forState:UIControlStateNormal];
+					
+					// Hide shadow
+					button.layer.shadowOpacity = 0.0f;
+				}
+			}
+		}	// end-for: _mainScroller.subviews
+	}
+}
+
 - (void)showSplash
 {
 	UIInterfaceOrientation orient = self.interfaceOrientation;
@@ -913,6 +988,14 @@ static const CGFloat yCoords[] = {7, 101, 195, 289};
 		return;
 	}
 	
+	// Are we are currently connected?
+	if( self.connectedPeripheral )
+	{
+		[self print:@"Disconnecting..."];
+		[centralManager cancelPeripheralConnection:self.connectedPeripheral];
+		return;
+	}
+	
 	// Show HUD
 	[MBProgressHUD showHUDAddedTo:self.view animated:YES];
 	
@@ -922,21 +1005,14 @@ static const CGFloat yCoords[] = {7, 101, 195, 289};
 	
 	// Start scanning - we're only looking for devices with the "Generic Command and Control Protocol" service
 	[self print:@"Start scanning..."];
-//	scanTimer = [NSTimer scheduledTimerWithTimeInterval:2.0f target:self selector:@selector(scanTimeout:) userInfo:nil repeats:NO];
-	scanTimer = [NSTimer timerWithTimeInterval:2.0f target:self selector:@selector(scanTimeout:) userInfo:nil repeats:NO];
+	scanTimer = [NSTimer timerWithTimeInterval:SCAN_TIMEOUT target:self selector:@selector(scanTimeout:) userInfo:nil repeats:NO];
 	[[NSRunLoop mainRunLoop] addTimer:scanTimer forMode:NSRunLoopCommonModes];
 	
 	[centralManager scanForPeripheralsWithServices:[NSArray arrayWithObject:[CBUUID UUIDWithString:UUID_GCAC_SERVICE]] options:0];
 	
 	// Set toolbar items
-	if( [toolbarItems containsObject:_learnButton] )
-	{
-		[toolbarItems insertObject:_scanButton atIndex:[toolbarItems indexOfObject:_learnButton]];
-		[toolbarItems removeObject:_learnButton];
-	}
-
-	_scanButton.enabled = NO;
-	[_toolbar setItems:toolbarItems animated:YES];
+	_learnButton.enabled = NO;
+	_connectButton.enabled = NO;
 }
 
 - (IBAction)disconnectAction:(id)sender
@@ -978,87 +1054,7 @@ static const CGFloat yCoords[] = {7, 101, 195, 289};
 {
 	// Toggle recording
 	learning = !learning;
-	
-	// Create fade-up/fade-down animation to be shown on toolbar and buttons
-	CABasicAnimation *anim = [CABasicAnimation animationWithKeyPath:@"shadowOpacity"];
-    anim.fromValue = [NSNumber numberWithFloat:0.0];
-    anim.toValue = [NSNumber numberWithFloat:0.85f];
-    anim.duration = 1.0;
-	anim.autoreverses = YES;
-	anim.repeatCount = MAXFLOAT;	// I.e. infinite
-	
-	// Are we learnign?
-	if( learning )
-		// Yes: add shadow animation
-		[_toolbar.layer addAnimation:anim forKey:@"shadowOpacity"];
-	else 
-	{
-		// No: remove animation
-		[_toolbar.layer removeAllAnimations];
-		_toolbar.layer.shadowOpacity = 0.0f;
-	}
-
-	// Change font color on all buttons
-	// iPhone or iPad?
-	if( UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad )
-	{
-		// iPad: all pages
-		for( UIView *view in [pageContent allValues] )
-		{
-			// Individual buttons
-			for( UIView *subview in view.subviews )
-			{
-				if( [subview isKindOfClass:[UIButton class]] )
-				{
-					UIButton *button = (UIButton*)subview;	// Typecast
-					if( learning )
-					{
-						[button setTitleColor:[UIColor redColor] forState:UIControlStateNormal];
-						[button setTitleShadowColor:[UIColor whiteColor] forState:UIControlStateNormal];
-						
-						// Start shadow animation
-						[button.layer addAnimation:anim forKey:@"shadowOpacity"];
-					}
-					else 
-					{
-						[button setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
-						[button setTitleShadowColor:[UIColor blackColor] forState:UIControlStateNormal];
-						
-						// Stop animation
-						[button.layer removeAllAnimations];
-						button.layer.shadowOpacity = 0.0f;
-					}
-				}
-			}	// end-for: subviews
-		}	// end-for: [pageContent allValues]
-	}
-	else
-	{
-		// iPhone: use mainScroller
-		for( UIView *subview in _mainScroller.subviews )
-		{		
-			if( [subview isKindOfClass:[UIButton class]] )
-			{
-				UIButton *button = (UIButton*)subview;	// Typecast for your convenience
-				if( learning )
-				{
-					[button setTitleColor:[UIColor redColor] forState:UIControlStateNormal];
-					[button setTitleShadowColor:[UIColor whiteColor] forState:UIControlStateNormal];
-					
-					// Show shadow. Performance is not good enough for animation
-					button.layer.shadowOpacity = 0.85f;
-				}
-				else 
-				{
-					[button setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
-					[button setTitleShadowColor:[UIColor blackColor] forState:UIControlStateNormal];
-					
-					// Hide shadow
-					button.layer.shadowOpacity = 0.0f;
-				}
-			}
-		}	// end-for: _mainScroller.subviews
-	}
+	[self showLearningAnimation:learning];
 }
 
 - (IBAction)toggleDebugAction:(id)sender
@@ -1101,6 +1097,7 @@ static const CGFloat yCoords[] = {7, 101, 195, 289};
 {
 	BOOL isEnabled = NO;
 	
+	// Are the buttons currently enabled?
 	// iPhone or iPad?
 	if( UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad )
 	{
@@ -1133,24 +1130,18 @@ static const CGFloat yCoords[] = {7, 101, 195, 289};
 		[self disableButtons];
 		
 		// Set toolbar items
-		if( [toolbarItems containsObject:_learnButton] )
-		{
-			[toolbarItems insertObject:_scanButton atIndex:[toolbarItems indexOfObject:_learnButton]];
-			[toolbarItems removeObject:_learnButton];
-		}
-		[_toolbar setItems:toolbarItems animated:YES];
+		_learnButton.enabled = NO;
+		_connectButton.enabled = YES;
+		_connectButton.image = [UIImage imageNamed:@"barbtn_lightning"];
 	}
 	else 
 	{
 		[self enableButtons];
 		
 		// Set toolbar items
-		if( [toolbarItems containsObject:_scanButton] )
-		{
-			[toolbarItems insertObject:_learnButton atIndex:[toolbarItems indexOfObject:_scanButton]];
-			[toolbarItems removeObject:_scanButton];
-		}
-		[_toolbar setItems:toolbarItems animated:YES];
+		_learnButton.enabled = YES;
+		_connectButton.enabled = YES;
+		_connectButton.image = [UIImage imageNamed:@"barbtn_disconnect"];
 	}
 }
 

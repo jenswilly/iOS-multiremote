@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="1.1" toolsVersion="2182" systemVersion="11E53" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" initialViewController="2">
     <dependencies>
-        <deployment defaultVersion="1296" identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="1181"/>
     </dependencies>
     <scenes>
@@ -98,7 +97,7 @@
                                             <action selector="learn:" destination="2" id="feg-eG-E3e"/>
                                         </connections>
                                     </barButtonItem>
-                                    <barButtonItem image="barbtn_scan.png" id="TID-TB-vVD">
+                                    <barButtonItem image="barbtn_lightning.png" id="TID-TB-vVD">
                                         <connections>
                                             <action selector="scanAction:" destination="2" id="DXg-Ii-ev3"/>
                                         </connections>
@@ -109,13 +108,13 @@
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
                     </view>
                     <connections>
+                        <outlet property="connectButton" destination="TID-TB-vVD" id="dva-5Y-WaX"/>
                         <outlet property="debugButton" destination="E0v-iB-8Nx" id="oiH-hH-ny8"/>
                         <outlet property="debugView" destination="1Du-65-ZBT" id="46P-Pa-wqx"/>
                         <outlet property="flexSpace" destination="ucN-lc-wZU" id="ZsF-gi-hY9"/>
                         <outlet property="learnButton" destination="d9Q-8B-QJY" id="DRt-GC-7K6"/>
                         <outlet property="mainScroller" destination="fQH-dS-nRQ" id="5NV-pG-dqx"/>
                         <outlet property="pageLabelScroller" destination="bT6-VY-Rmv" id="KWP-lY-b3K"/>
-                        <outlet property="scanButton" destination="TID-TB-vVD" id="luz-Is-GLx"/>
                         <outlet property="textView" destination="mUI-pA-oKY" id="gMg-qj-UBx"/>
                         <outlet property="toolbar" destination="HRd-su-WvA" id="9UE-tJ-5j5"/>
                     </connections>
@@ -128,8 +127,8 @@
     <resources>
         <image name="background.png" width="320" height="416"/>
         <image name="barbtn_debug.png" width="20" height="16"/>
+        <image name="barbtn_lightning.png" width="10" height="20"/>
         <image name="barbtn_record.png" width="16" height="15"/>
-        <image name="barbtn_scan.png" width="18" height="20"/>
         <image name="titleScrollerOverlay.png" width="320" height="40"/>
     </resources>
     <classes>

@@ -26,7 +26,6 @@ typedef enum
 	AVAudioPlayer *audioPlayer;
 	NSUInteger currentCommandNumber;
 	CommandMode commandMode;
-	NSMutableArray *toolbarItems;
 }
 
 @property (weak) PageListViewController *masterViewController;	// iPad only
@@ -46,7 +45,7 @@ typedef enum
 @property (weak, nonatomic) IBOutlet UIScrollView *pageLabelScroller;	// iPhone only
 @property (strong, nonatomic) IBOutlet UIBarButtonItem *learnButton;
 @property (strong, nonatomic) IBOutlet UIBarButtonItem *debugButton;
-@property (strong, nonatomic) IBOutlet UIBarButtonItem *scanButton;
+@property (strong, nonatomic) IBOutlet UIBarButtonItem *connectButton;
 @property (strong, nonatomic) IBOutlet UIBarButtonItem *flexSpace;
 @property (weak, nonatomic) IBOutlet UIToolbar *toolbar;
 @property (weak, nonatomic) UIView *currentButtonsView;			// iPad only
