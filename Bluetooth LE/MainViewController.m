@@ -44,8 +44,7 @@ static const CGFloat yCoords[] = {7, 101, 195, 289};
 {
     [super viewDidLoad];
 
-	// Show splash
-	[self showSplash];
+	DEBUG_POSITION;
 	
 	// Set background for iPad
 	// iPhone or iPad?
@@ -77,7 +76,6 @@ static const CGFloat yCoords[] = {7, 101, 195, 289};
 	else
 		[self parseXMLFile:@"remote.xml"];
 
-	
 	// Disable all buttons requiring a connection
 	[self disableButtons];
 	
@@ -113,7 +111,7 @@ static const CGFloat yCoords[] = {7, 101, 195, 289};
 		return YES;
 	else
 		// iPhone supports only portrait orientations
-		return UIInterfaceOrientationIsPortrait( interfaceOrientation );
+		return (interfaceOrientation == UIInterfaceOrientationPortrait);
 }
 
 #pragma mark - UIScrollViewDelegate methods
@@ -837,8 +835,8 @@ static const CGFloat yCoords[] = {7, 101, 195, 289};
 
 - (void)showSplash
 {
-	UIInterfaceOrientation orient = self.interfaceOrientation;
-	DEBUG_LOG( @"showSplash: orientation: %d", orient );
+	UIInterfaceOrientation orientation = self.interfaceOrientation;
+	DEBUG_LOG( @"showSplash: orientation: %d", orientation );
 	
 	// Create image view with image that match device and orientation
 	UIImage *image;
@@ -848,8 +846,8 @@ static const CGFloat yCoords[] = {7, 101, 195, 289};
 	if( UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad )
 	{
 		// iPad: which orientation?
-		[[UIDevice currentDevice] beginGeneratingDeviceOrientationNotifications];
-		UIDeviceOrientation orientation = [[UIDevice currentDevice] orientation];
+//		[[UIDevice currentDevice] beginGeneratingDeviceOrientationNotifications];
+//		UIDeviceOrientation orientation = [[UIDevice currentDevice] orientation];
 		if( UIDeviceOrientationIsLandscape( orientation ))
 		{
 			// We need to rotate image view
@@ -889,19 +887,20 @@ static const CGFloat yCoords[] = {7, 101, 195, 289};
 	
 	// Instantiate image view and adjust rotation and origin
 	UIImageView *splashView = [[UIImageView alloc] initWithImage:image];
-	[self.view addSubview:splashView];
+	DEBUG_LOG( @"splashView: %@", splashView );
+	[APP.window addSubview:splashView];
 	splashView.transform = transform;
 	CGRect frame = splashView.frame;
 	frame.origin = origin;
 	splashView.frame = frame;
 	
 	frame = CGRectInset( splashView.frame, -splashView.frame.size.width, -splashView.frame.size.height );
-	[UIView animateWithDuration:0.5 delay:1 options:0 animations:^{
-		splashView.alpha = 0;
-		splashView.frame = frame;
-	} completion:^(BOOL finished) {
-		[splashView removeFromSuperview];
-	}];
+//	[UIView animateWithDuration:0.5 delay:1 options:0 animations:^{
+//		splashView.alpha = 0;
+//		splashView.frame = frame;
+//	} completion:^(BOOL finished) {
+//		[splashView removeFromSuperview];
+//	}];
 }
 
 - (void)disableButtons

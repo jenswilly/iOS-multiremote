@@ -16,9 +16,25 @@ static NSString* const kUserDefaults_PreferredDeviceKey = @"kUserDefaults_Prefer
 @implementation AppDelegate
 
 @synthesize window = _window, preferredDeviceUUID;
+@synthesize orientation = _orientation;
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
+	// This is a hack to force the -[UIApplication willChangeStatusBarOrientation:duration:] to be called regardless of the current orientation.
+	// Wrap this in a try-catch block in case this breaks in the future.
+	// Do this on iPad only - on iPhone we simply show the splash screen immediately since we're already in the correct interface orientation
+	if( UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad )
+	{
+		@try
+		{
+			[[UIApplication sharedApplication] setStatusBarOrientation:-1];
+		}
+		@catch( NSException *exception )
+		{
+			NSLog( @"Caught exception trying to set statur bar orientation to -1: %@", [exception description] );
+		}
+	}
+
 	// Set split view controller's delegate (can't do this in IB for some reason)
 	if( UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad )
 	{
@@ -28,17 +44,26 @@ static NSString* const kUserDefaults_PreferredDeviceKey = @"kUserDefaults_Prefer
 	[self.window makeKeyAndVisible];
 	[self setAppearance];
 
-	// Show splash screen _after_ application:didFinishLaunchingWithOptions: has returned.
-	// Only at that point can [[UIDevice currentDevice] orientation] be relied on.
-	// [self performSelectorOnMainThread:@selector(showSplash) withObject:nil waitUntilDone:NO];
+	// On iPhone, show splash screen immediately
+	if( UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone )
+		[self showSplash:UIInterfaceOrientationPortrait];
 
     return YES;
 }
 	
-- (void)showSplash
+- (void)application:(UIApplication *)application willChangeStatusBarOrientation:(UIInterfaceOrientation)newStatusBarOrientation duration:(NSTimeInterval)duration
 {
-	DEBUG_POSITION;
-	
+	if( newStatusBarOrientation != -1 )
+	{
+		static dispatch_once_t dispatch_once_pred;
+		dispatch_once( &dispatch_once_pred, ^{
+			[self showSplash:newStatusBarOrientation];
+		});
+	}
+}
+
+- (void)showSplash:(UIInterfaceOrientation)orientation
+{
 	// Create image view with image that match device and orientation
 	UIImage *image;
 	CGAffineTransform transform = CGAffineTransformIdentity;
@@ -47,8 +72,8 @@ static NSString* const kUserDefaults_PreferredDeviceKey = @"kUserDefaults_Prefer
 	if( UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad )
 	{
 		// iPad: which orientation?
-		[[UIDevice currentDevice] beginGeneratingDeviceOrientationNotifications];
-		UIDeviceOrientation orientation = [[UIDevice currentDevice] orientation];
+//		[[UIDevice currentDevice] beginGeneratingDeviceOrientationNotifications];
+//		UIDeviceOrientation orientation = [[UIDevice currentDevice] orientation];
 		if( UIDeviceOrientationIsLandscape( orientation ))
 		{
 			// We need to rotate image view
@@ -82,7 +107,7 @@ static NSString* const kUserDefaults_PreferredDeviceKey = @"kUserDefaults_Prefer
 	{
 		// iPhone
 		image = [UIImage imageNamed:@"Default.png"];
-		origin = CGPointMake( 0, -20 );		// Adjust for status bar
+//		origin = CGPointMake( 0, -20 );		// Adjust for status bar
 	}
 	
 	
@@ -95,7 +120,7 @@ static NSString* const kUserDefaults_PreferredDeviceKey = @"kUserDefaults_Prefer
 	splashView.frame = frame;
 	
 	frame = CGRectInset( splashView.frame, -splashView.frame.size.width, -splashView.frame.size.height );
-	[UIView animateWithDuration:0.5 delay:1 options:0 animations:^{
+	[UIView animateWithDuration:0.5 animations:^{
 		splashView.alpha = 0;
 		splashView.frame = frame;
 	} completion:^(BOOL finished) {
@@ -173,6 +198,7 @@ static NSString* const kUserDefaults_PreferredDeviceKey = @"kUserDefaults_Prefer
 - (void)loadPreferredDevice
 {
 	DEBUG_POSITION;
+	DEBUG_LOG( @"Orientation in load: %d", _orientation );
 	
 	NSData *UUIDData = [[NSUserDefaults standardUserDefaults] objectForKey:kUserDefaults_PreferredDeviceKey];
 	if( UUIDData != nil )

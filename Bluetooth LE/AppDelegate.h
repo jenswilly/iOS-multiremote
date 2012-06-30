@@ -14,11 +14,12 @@
 
 @property (strong, nonatomic) UIWindow *window;
 @property (strong) CBUUID *preferredDeviceUUID;
+@property (assign) UIInterfaceOrientation orientation;
 
 - (void)savePreferredDevice;
 - (void)loadPreferredDevice;
 - (void)setAppearance;
 - (MainViewController*)mainViewController;
-
+- (void)showSplash:(UIInterfaceOrientation)orientation;
 
 @end
