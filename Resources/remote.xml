@@ -59,5 +59,28 @@
 			<button id="33" color="yellow" text="INFO" />
 		</row>
 	</page>
+
+	<page name="DVD" layout="medium_buttons">
+		<row>
+			<button id="34" color="orange" text="SUBT" />
+			<button id="35" color="purple" image="icnsmall_arrow_up" />
+			<button id="36" color="red" image="icnsmall_power" />
+		</row>
+		<row>
+			<button id="37" color="purple" image="icnsmall_arrow_left" />
+			<button id="38" color="purple" image="icnsmall_dot" />
+			<button id="39" color="purple" image="icnsmall_arrow_right" />
+		</row>
+		<row>
+			<button />
+			<button id="40" color="purple" image="icnsmall_arrow_down" />
+			<button />
+		</row>
+		<row>
+			<button id="41" color="orange" image="icnsmall_eject" />
+			<button id="42" color="orange" image="icnsmall_stop" />
+			<button id="43" color="orange" image="icnsmall_play" />
+		</row>
+	</page>
 	
 </config>

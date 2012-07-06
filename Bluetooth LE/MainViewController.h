@@ -63,5 +63,6 @@ typedef enum
 - (IBAction)learn:(id)sender;
 - (IBAction)toggleDebugAction:(id)sender;
 - (IBAction)debug1Action:(id)sender;
+- (IBAction)choosePageAction:(id)sender;
 
 @end

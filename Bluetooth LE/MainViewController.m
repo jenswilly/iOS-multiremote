@@ -22,6 +22,13 @@
 
 #define SCAN_TIMEOUT 2.0f	// Timeout value for scanning
 
+// Anonymous enum with tags
+enum 
+{
+	TagConnectToDeviceActionSheet,
+	TagJumpToPageActionSheet
+} Tags;
+
 // Coordinates for buttons
 static const CGFloat xCoords[] = {24, 117, 210};
 static const CGFloat yCoords[] = {7, 101, 195, 289};
@@ -184,6 +191,7 @@ static const CGFloat yCoords[] = {7, 101, 195, 289};
 		
 		/// BUG: iOS 6 fix
 		UIActionSheet *actionSheet = [[UIActionSheet alloc] initWithTitle:@"Connect to device" delegate:self cancelButtonTitle:@"Cancel" destructiveButtonTitle:nil otherButtonTitles:@"Device", nil];
+		actionSheet.tag = TagConnectToDeviceActionSheet;
 		
 		/// BUG: iOS 6 – can't add buttons in iOS 6. Or is it iPad? :(
 		/*
@@ -243,31 +251,47 @@ static const CGFloat yCoords[] = {7, 101, 195, 289};
 
 - (void)actionSheet:(UIActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex
 {
-	// Was it cancel?
-	if( buttonIndex == actionSheet.cancelButtonIndex )
+	// Was it the "Jump to page" action sheet?
+	if( actionSheet.tag == TagJumpToPageActionSheet )
 	{
-		// Yes: enable scan button and exit
-		_connectButton.enabled = YES;
-		return;
+		// Cancel?
+		if( buttonIndex == actionSheet.cancelButtonIndex )
+			// Yes: just return
+			return;
+		
+		// Otherwise jump to page. Index corresponds page number, 1-based
+		[_mainScroller setContentOffset:CGPointMake( _mainScroller.bounds.size.width * (buttonIndex-1), 0) animated:YES];
 	}
 	
-	// Otherwise, connect to specified device
-	CBPeripheral *peripheral;
-	
-	// iPhone or iPad?
-	if( UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad )
+	// Connect to device action sheet
+	if( actionSheet.tag == TagConnectToDeviceActionSheet )
 	{
-		peripheral = [peripherals objectAtIndex:0];
-	}
-	else
-	{
-		peripheral = [peripherals objectAtIndex:buttonIndex - 1];	// -1 for the Cancel button
-	}
-	
-	DEBUG_LOG( @"Peripheral: %@", [peripheral description] );
+		// Was it cancel?
+		if( buttonIndex == actionSheet.cancelButtonIndex )
+		{
+			// Yes: enable scan button and exit
+			_connectButton.enabled = YES;
+			return;
+		}
+		
+		// Otherwise, connect to specified device
+		CBPeripheral *peripheral;
+		
+		// iPhone or iPad?
+		if( UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad )
+		{
+			peripheral = [peripherals objectAtIndex:0];
+		}
+		else
+		{
+			peripheral = [peripherals objectAtIndex:buttonIndex - 1];	// -1 for the Cancel button
+		}
+		
+		DEBUG_LOG( @"Peripheral: %@", [peripheral description] );
 
-	[MBProgressHUD showHUDAddedTo:self.view animated:YES];
-	[centralManager connectPeripheral:peripheral options:[NSDictionary dictionaryWithObject:[NSNumber numberWithBool:YES] forKey:CBConnectPeripheralOptionNotifyOnDisconnectionKey]];
+		[MBProgressHUD showHUDAddedTo:self.view animated:YES];
+		[centralManager connectPeripheral:peripheral options:[NSDictionary dictionaryWithObject:[NSNumber numberWithBool:YES] forKey:CBConnectPeripheralOptionNotifyOnDisconnectionKey]];
+	}
 }
 
 #pragma mark - CBCentralManagerDelegate methods
@@ -1142,6 +1166,27 @@ static const CGFloat yCoords[] = {7, 101, 195, 289};
 		_connectButton.enabled = YES;
 		_connectButton.image = [UIImage imageNamed:@"barbtn_disconnect"];
 	}
+}
+
+- (IBAction)choosePageAction:(id)sender
+{
+	UIActionSheet *actionSheet = [[UIActionSheet alloc] initWithTitle:@"Jump to page" delegate:self cancelButtonTitle:@"Cancel" destructiveButtonTitle:nil otherButtonTitles:nil];
+	actionSheet.tag = TagJumpToPageActionSheet;
+	actionSheet.actionSheetStyle = UIActionSheetStyleBlackTranslucent;
+	
+	// Iterate pageLabelScroller. Labels are added in left-to-rigth order so we can rely on position in subviews array.
+	for( UILabel *subview in _pageLabelScroller.subviews )
+	{
+		// Make sure it's a label
+		if( ![subview isKindOfClass:[UILabel class]] )
+			continue;
+		
+		// Add page title
+		[actionSheet addButtonWithTitle:subview.text];
+	}
+	
+	// Show it
+	[actionSheet showInView:self.view];
 }
 
 - (IBAction)sendLearnAction:(id)sender

@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="1.1" toolsVersion="2182" systemVersion="11E53" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" initialViewController="2">
     <dependencies>
+        <deployment defaultVersion="1296" identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="1181"/>
     </dependencies>
     <scenes>
@@ -104,6 +105,22 @@
                                     </barButtonItem>
                                 </items>
                             </toolbar>
+                            <button opaque="NO" alpha="0.5" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="sZK-HQ-qpy" userLabel="choosePageBtn">
+                                <rect key="frame" x="0.0" y="44" width="320" height="34"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <color key="backgroundColor" red="1" green="1" blue="0.60348409410000003" alpha="0.0" colorSpace="calibratedRGB"/>
+                                <fontDescription key="fontDescription" type="boldSystem" pointSize="15"/>
+                                <state key="normal">
+                                    <color key="titleColor" red="0.19607843459999999" green="0.30980393290000002" blue="0.52156865600000002" alpha="1" colorSpace="calibratedRGB"/>
+                                    <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                </state>
+                                <state key="highlighted">
+                                    <color key="titleColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                </state>
+                                <connections>
+                                    <action selector="choosePageAction:" destination="2" eventType="touchUpInside" id="Wsg-0n-wz9"/>
+                                </connections>
+                            </button>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
                     </view>
@@ -131,34 +148,6 @@
         <image name="barbtn_record.png" width="16" height="15"/>
         <image name="titleScrollerOverlay.png" width="320" height="40"/>
     </resources>
-    <classes>
-        <class className="MainViewController" superclassName="UIViewController">
-            <source key="sourceIdentifier" type="project" relativePath="./Classes/MainViewController.h"/>
-            <relationships>
-                <relationship kind="action" name="clearAction:"/>
-                <relationship kind="action" name="debug1Action:"/>
-                <relationship kind="action" name="disconnectAction:"/>
-                <relationship kind="action" name="forgetPreferredAction:"/>
-                <relationship kind="action" name="learn:"/>
-                <relationship kind="action" name="readAction:"/>
-                <relationship kind="action" name="scanAction:"/>
-                <relationship kind="action" name="sendLearnAction:"/>
-                <relationship kind="action" name="sendTAction:"/>
-                <relationship kind="action" name="sendYAction:"/>
-                <relationship kind="action" name="toggleDebugAction:"/>
-                <relationship kind="outlet" name="contentView" candidateClass="UIView"/>
-                <relationship kind="outlet" name="debugButton" candidateClass="UIBarButtonItem"/>
-                <relationship kind="outlet" name="debugView" candidateClass="UIView"/>
-                <relationship kind="outlet" name="flexSpace" candidateClass="UIBarButtonItem"/>
-                <relationship kind="outlet" name="learnButton" candidateClass="UIBarButtonItem"/>
-                <relationship kind="outlet" name="mainScroller" candidateClass="UIScrollView"/>
-                <relationship kind="outlet" name="pageLabelScroller" candidateClass="UIScrollView"/>
-                <relationship kind="outlet" name="scanButton" candidateClass="UIBarButtonItem"/>
-                <relationship kind="outlet" name="textView" candidateClass="UITextView"/>
-                <relationship kind="outlet" name="toolbar" candidateClass="UIToolbar"/>
-            </relationships>
-        </class>
-    </classes>
     <simulatedMetricsContainer key="defaultSimulatedMetrics">
         <simulatedStatusBarMetrics key="statusBar" statusBarStyle="blackTranslucent"/>
         <simulatedOrientationMetrics key="orientation"/>
