@@ -5,7 +5,7 @@
 		<row>
 			<button id="1" color="green" image="icn_arrow_up" />
 			<button id="2" color="orange" image="icn_vol_up" mode="repeat" />
-			<button id="3" color="red" image="icn_power" />
+			<button id="3" color="red" image="icn_power" mode="repeat" />
 		</row>
 		<row>
 			<button id="4" color="green" image="icn_arrow_down" />

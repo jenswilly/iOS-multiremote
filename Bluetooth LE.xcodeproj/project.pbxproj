@@ -264,7 +264,6 @@
 		473C9F50154F42A700842854 = {
 			isa = PBXGroup;
 			children = (
-				4772C57E1598468800D9D862 /* QuartzCore.framework */,
 				477B11EC1586BEEA00930672 /* Models */,
 				477B11C815843A3900930672 /* Views */,
 				47309C2F155AD5C60065F74E /* readme.md */,
@@ -286,6 +285,7 @@
 		473C9F5E154F42A700842854 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				4772C57E1598468800D9D862 /* QuartzCore.framework */,
 				47C058FE1561BB6200F35DFD /* AVFoundation.framework */,
 				47C058F51561B36500F35DFD /* AudioToolbox.framework */,
 				473C9F7C154F42C700842854 /* CoreBluetooth.framework */,

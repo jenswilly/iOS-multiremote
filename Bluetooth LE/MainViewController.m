@@ -20,7 +20,7 @@
 
 #define COMMAND_NUMBER @"commandNumber"
 
-#define SCAN_TIMEOUT 2.0f	// Timeout value for scanning
+#define SCAN_TIMEOUT 5.0f	// Timeout value for scanning
 
 // Anonymous enum with tags
 enum 
@@ -179,6 +179,10 @@ static const CGFloat yCoords[] = {7, 101, 195, 289};
 
 - (void)scanTimeout:(NSTimer*)timer
 {
+	// iOS6 beta fix: this method is fired even though the timer has been invalidated
+	if( timer != scanTimer )
+		return;
+
 	// Stop scanning
 	[centralManager stopScan];
 	[MBProgressHUD hideHUDForView:self.view animated:YES];
@@ -339,6 +343,7 @@ static const CGFloat yCoords[] = {7, 101, 195, 289};
 		[self print:@"Found preferred device – connecting..." ];
 		[centralManager stopScan];
 		[scanTimer invalidate];	// So we don't get to the "done scanning" method
+		scanTimer = nil;
 		
 		// Connect...
 		[centralManager connectPeripheral:peripheral options:[NSDictionary dictionaryWithObject:[NSNumber numberWithBool:YES] forKey:CBConnectPeripheralOptionNotifyOnDisconnectionKey]];
@@ -348,8 +353,9 @@ static const CGFloat yCoords[] = {7, 101, 195, 289};
 - (void)centralManager:(CBCentralManager *)central didConnectPeripheral:(CBPeripheral *)peripheral
 {
 	// Hide HUD
-	[MBProgressHUD hideHUDForView:self.view animated:YES];
-	
+//	[MBProgressHUD hideHUDForView:self.view animated:YES];
+	[MBProgressHUD hideAllHUDsForView:self.view animated:YES];
+
 	[self print:[NSString stringWithFormat:@"Connected to peripheral: %@", [CBUUID stringFromCFUUIDRef:peripheral.UUID]]];
 	
 	// Set property and remember as preferred device
@@ -383,6 +389,16 @@ static const CGFloat yCoords[] = {7, 101, 195, 289};
 - (void)centralManager:(CBCentralManager *)central didFailToConnectPeripheral:(CBPeripheral *)peripheral error:(NSError *)error
 {
 	[self print:[NSString stringWithFormat:@"Could not connect to peripheral. Error: %@", [error localizedDescription] ]];
+}
+
+- (void)centralManager:(CBCentralManager *)central didRetrieveConnectedPeripherals:(NSArray *)connectedPeripherals
+{
+	DEBUG_LOG( @"Connected peripherals: %@", connectedPeripherals );
+}
+
+- (void)centralManager:(CBCentralManager *)central didRetrievePeripherals:(NSArray *)foundPeripherals
+{
+	DEBUG_LOG( @"Found peripherals: %@", foundPeripherals );
 }
 
 #pragma mark - CBPeripheralDelegate methods
@@ -1053,6 +1069,9 @@ static const CGFloat yCoords[] = {7, 101, 195, 289};
 - (IBAction)clearAction:(id)sender
 {
 	_textView.text = @"";
+
+	[centralManager retrieveConnectedPeripherals];
+	[centralManager retrievePeripherals:[NSArray arrayWithObject:APP.preferredDeviceUUID]];
 }
 
 - (IBAction)forgetPreferredAction:(id)sender
