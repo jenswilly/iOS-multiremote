@@ -105,8 +105,14 @@ static NSString* const kUserDefaults_PreferredDeviceKey = @"kUserDefaults_Prefer
 	}
 	else
 	{
-		// iPhone
-		image = [UIImage imageNamed:@"Default.png"];
+		// iPhone 4 or 5?
+		DEBUG_LOG( @"height: %.f", [UIScreen mainScreen].bounds.size.height );
+		if( [UIScreen mainScreen].bounds.size.height == 568 )
+			// iPhone 5
+			image = [UIImage imageNamed:@"Default-568h"];
+		else
+			// iPhone 4
+			image = [UIImage imageNamed:@"Default.png"];
 //		origin = CGPointMake( 0, -20 );		// Adjust for status bar
 	}
 	

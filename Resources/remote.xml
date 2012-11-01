@@ -38,19 +38,19 @@
 		<row>
 			<button id="22" />
 			<button id="23" color="lightblue" text="0" />
-			<button id="24" color="lime" text="TEST" />
+			<button id="29" color="black" image="icnsmall_dot" />	<!-- enter -->
 		</row>
 	</page>
 	
 	<page name="Guide" layout="large_buttons" >
 		<row>
-			<button id="25" />
+			<button id="25" color="orange" text="BACK" />
 			<button id="26" color="blue" image="icn_arrow_up" />
-			<button id="27" />
+			<button id="27" color="red" text="EXIT" />
 		</row>
 		<row>
 			<button id="28" color="blue" image="icn_arrow_left" />
-			<button id="29" color="blue" image="icn_dot" />
+			<button id="29" color="blue" image="icn_dot" />	<!-- enter -->
 			<button id="30" color="blue" image="icn_arrow_right" />
 		</row>
 		<row>
@@ -60,26 +60,44 @@
 		</row>
 	</page>
 
+	<page name="AppleTV" layout="large_buttons">
+		<row>
+			<button id="34" />
+			<button id="35" color="blue" image="icnsmall_arrow_up" />
+			<button id="36" />
+		</row>
+		<row>
+			<button id="37" color="blue" image="icn_arrow_left" />
+			<button id="38" color="blue" image="icn_dot" />
+			<button id="39" color="blue" image="icn_arrow_right" />
+		</row>
+		<row>
+			<button id="41" color="yellow" text="MENU" />
+			<button id="40" color="blue" image="icn_arrow_down" />
+			<button id="43" color="yellow" image="icnsmall_play" />
+		</row>
+	</page>
+	
 	<page name="DVD" layout="medium_buttons">
 		<row>
-			<button id="34" color="orange" text="SUBT" />
-			<button id="35" color="purple" image="icnsmall_arrow_up" />
-			<button id="36" color="red" image="icnsmall_power" />
+			<button id="44" color="orange" text="SUBT" />
+			<button id="45" color="purple" image="icnsmall_arrow_up" />
+			<button id="46" color="red" image="icnsmall_power" />
 		</row>
 		<row>
-			<button id="37" color="purple" image="icnsmall_arrow_left" />
-			<button id="38" color="purple" image="icnsmall_dot" />
-			<button id="39" color="purple" image="icnsmall_arrow_right" />
+			<button id="47" color="purple" image="icnsmall_arrow_left" />
+			<button id="48" color="purple" image="icnsmall_dot" />
+			<button id="49" color="purple" image="icnsmall_arrow_right" />
 		</row>
 		<row>
 			<button />
-			<button id="40" color="purple" image="icnsmall_arrow_down" />
+			<button id="50" color="purple" image="icnsmall_arrow_down" />
 			<button />
 		</row>
 		<row>
-			<button id="41" color="orange" image="icnsmall_eject" />
-			<button id="42" color="orange" image="icnsmall_stop" />
-			<button id="43" color="orange" image="icnsmall_play" />
+			<button id="51" color="orange" image="icnsmall_eject" />
+			<button id="52" color="orange" image="icnsmall_stop" />
+			<button id="53" color="orange" image="icnsmall_play" />
 		</row>
 	</page>
 	

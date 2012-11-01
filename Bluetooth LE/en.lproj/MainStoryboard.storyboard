@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="1.1" toolsVersion="2182" systemVersion="11E53" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" initialViewController="2">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="2.0" toolsVersion="2843" systemVersion="12C60" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" initialViewController="2">
     <dependencies>
-        <deployment defaultVersion="1296" identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="1181"/>
+        <deployment defaultVersion="1536" identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="1929"/>
     </dependencies>
     <scenes>
         <!--Main View Controller-->
@@ -13,13 +13,13 @@
                         <rect key="frame" x="0.0" y="20" width="320" height="460"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                         <subviews>
-                            <imageView opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" image="background.png" id="Tlj-yR-Jxf">
+                            <imageView opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="top" image="background.png" id="Tlj-yR-Jxf">
                                 <rect key="frame" x="0.0" y="44" width="320" height="416"/>
-                                <autoresizingMask key="autoresizingMask"/>
+                                <autoresizingMask key="autoresizingMask" heightSizable="YES"/>
                             </imageView>
                             <scrollView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" id="bT6-VY-Rmv" userLabel="pageLabelScroller">
                                 <rect key="frame" x="0.0" y="44" width="320" height="34"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <color key="backgroundColor" red="0.031372549020000001" green="0.094117647060000004" blue="0.42745098040000001" alpha="0.0" colorSpace="calibratedRGB"/>
                             </scrollView>
                             <imageView userInteractionEnabled="NO" contentMode="scaleToFill" image="titleScrollerOverlay.png" id="Oxf-zH-IJr">
@@ -28,14 +28,15 @@
                             </imageView>
                             <scrollView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" alwaysBounceHorizontal="YES" pagingEnabled="YES" showsHorizontalScrollIndicator="NO" showsVerticalScrollIndicator="NO" id="fQH-dS-nRQ" userLabel="mainScroller">
                                 <rect key="frame" x="0.0" y="78" width="320" height="382"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <color key="backgroundColor" white="1" alpha="0.0" colorSpace="custom" customColorSpace="calibratedWhite"/>
                                 <connections>
                                     <outlet property="delegate" destination="2" id="XSN-jD-xXz"/>
                                 </connections>
                             </scrollView>
                             <view contentMode="scaleToFill" id="1Du-65-ZBT" userLabel="debugView">
                                 <rect key="frame" x="0.0" y="460" width="320" height="250"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                 <subviews>
                                     <textView clipsSubviews="YES" multipleTouchEnabled="YES" alpha="0.69999999999999996" contentMode="scaleToFill" alwaysBounceVertical="YES" editable="NO" text="Ready" id="mUI-pA-oKY">
                                         <rect key="frame" x="0.0" y="0.0" width="320" height="250"/>
@@ -122,7 +123,7 @@
                                 </connections>
                             </button>
                         </subviews>
-                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
+                        <color key="backgroundColor" red="0.16078431900000001" green="0.68627452850000004" blue="0.87843137979999997" alpha="0.48999999999999999" colorSpace="calibratedRGB"/>
                     </view>
                     <connections>
                         <outlet property="connectButton" destination="TID-TB-vVD" id="dva-5Y-WaX"/>
@@ -148,6 +149,35 @@
         <image name="barbtn_record.png" width="16" height="15"/>
         <image name="titleScrollerOverlay.png" width="320" height="40"/>
     </resources>
+    <classes>
+        <class className="MainViewController" superclassName="UIViewController">
+            <source key="sourceIdentifier" type="project" relativePath="./Classes/MainViewController.h"/>
+            <relationships>
+                <relationship kind="action" name="choosePageAction:"/>
+                <relationship kind="action" name="clearAction:"/>
+                <relationship kind="action" name="debug1Action:"/>
+                <relationship kind="action" name="disconnectAction:"/>
+                <relationship kind="action" name="forgetPreferredAction:"/>
+                <relationship kind="action" name="learn:"/>
+                <relationship kind="action" name="readAction:"/>
+                <relationship kind="action" name="scanAction:"/>
+                <relationship kind="action" name="sendLearnAction:"/>
+                <relationship kind="action" name="sendTAction:"/>
+                <relationship kind="action" name="sendYAction:"/>
+                <relationship kind="action" name="toggleDebugAction:"/>
+                <relationship kind="outlet" name="connectButton" candidateClass="UIBarButtonItem"/>
+                <relationship kind="outlet" name="contentView" candidateClass="UIView"/>
+                <relationship kind="outlet" name="debugButton" candidateClass="UIBarButtonItem"/>
+                <relationship kind="outlet" name="debugView" candidateClass="UIView"/>
+                <relationship kind="outlet" name="flexSpace" candidateClass="UIBarButtonItem"/>
+                <relationship kind="outlet" name="learnButton" candidateClass="UIBarButtonItem"/>
+                <relationship kind="outlet" name="mainScroller" candidateClass="UIScrollView"/>
+                <relationship kind="outlet" name="pageLabelScroller" candidateClass="UIScrollView"/>
+                <relationship kind="outlet" name="textView" candidateClass="UITextView"/>
+                <relationship kind="outlet" name="toolbar" candidateClass="UIToolbar"/>
+            </relationships>
+        </class>
+    </classes>
     <simulatedMetricsContainer key="defaultSimulatedMetrics">
         <simulatedStatusBarMetrics key="statusBar" statusBarStyle="blackTranslucent"/>
         <simulatedOrientationMetrics key="orientation"/>

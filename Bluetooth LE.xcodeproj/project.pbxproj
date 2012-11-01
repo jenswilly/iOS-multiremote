@@ -242,7 +242,7 @@
 		47C0593715629FF300F35DFD /* btn_large_red@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "btn_large_red@2x.png"; sourceTree = "<group>"; };
 		47C0593915629FF300F35DFD /* btn_large_yellow@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "btn_large_yellow@2x.png"; sourceTree = "<group>"; };
 		47C059461562A02700F35DFD /* coordinates.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = coordinates.plist; sourceTree = "<group>"; };
-		47E55E161610D3D500E90661 /* Default-568h@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "Default-568h@2x.png"; path = "../Default-568h@2x.png"; sourceTree = "<group>"; };
+		47E55E161610D3D500E90661 /* Default-568h@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Default-568h@2x.png"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
