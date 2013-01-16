@@ -336,17 +336,20 @@ static const CGFloat yCoords[] = {7, 101, 195, 289};
 	[self print:[NSString stringWithFormat:@"Found peripheral with UUID %@, advertisement %@", [CBUUID stringFromCFUUIDRef:peripheral.UUID], [advertisementData description]]];
 	
 	// Is it the preferred device?
-	CBUUID *uuid = [CBUUID UUIDWithCFUUID:peripheral.UUID];
-	if( [uuid isEqualToUUID:APP.preferredDeviceUUID] )
+	if( peripheral.UUID )
 	{
-		// Yes: stop scanning and connect immediately
-		[self print:@"Found preferred device – connecting..." ];
-		[centralManager stopScan];
-		[scanTimer invalidate];	// So we don't get to the "done scanning" method
-		scanTimer = nil;
-		
-		// Connect...
-		[centralManager connectPeripheral:peripheral options:[NSDictionary dictionaryWithObject:[NSNumber numberWithBool:YES] forKey:CBConnectPeripheralOptionNotifyOnDisconnectionKey]];
+		CBUUID *uuid = [CBUUID UUIDWithCFUUID:peripheral.UUID];
+		if( [uuid isEqualToUUID:APP.preferredDeviceUUID] )
+		{
+			// Yes: stop scanning and connect immediately
+			[self print:@"Found preferred device – connecting..." ];
+			[centralManager stopScan];
+			[scanTimer invalidate];	// So we don't get to the "done scanning" method
+			scanTimer = nil;
+			
+			// Connect...
+			[centralManager connectPeripheral:peripheral options:[NSDictionary dictionaryWithObject:[NSNumber numberWithBool:YES] forKey:CBConnectPeripheralOptionNotifyOnDisconnectionKey]];
+		}
 	}
 }
 
